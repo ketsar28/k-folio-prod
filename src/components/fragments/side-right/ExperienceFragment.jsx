@@ -48,7 +48,7 @@ const ExperienceFragment = () => {
       <div>
         <a
           target="_blank"
-          href="https://drive.google.com/file/d/1fXYkGN8KkQD0qbNNBBKV-FKupryP5WBD/view?usp=sharing"
+          href="https://drive.google.com/file/d/1BFutuOLLmtW99tv0chN2XAruus8d1EAR/view?usp=sharing"
           className="text-[16px] font-bold text-[#D5DCE9] hover:text-green-500 transition-all duration-200 ease-linear text-justify py-6 lg:px-8 group"
         >
           View Full Resume{" "}
