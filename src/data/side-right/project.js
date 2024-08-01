@@ -1,12 +1,22 @@
 export const projectData = [
   {
+    image: "automation-testing-1.png",
+    position: "Automation Testing - AceOnlineShoePortal",
+    location: "Self Project",
+    description:
+      "Designed and implemented an automation testing framework for AceOnlineShoePortal using Java and Selenium. The project focused on enhancing test efficiency and coverage by incorporating a Behavior-Driven Development (BDD) approach with Cucumber and generating comprehensive reports with Allure. This automation suite significantly streamlined the testing process, reduced manual effort, and improved overall software reliability.",
+    technologies: ["Java", "Selenium", "BDD Framework", "Allure", "Cucumber"],
+    pathUrl: "https://github.com/ketsar28/selenium-cucumber-web-driver-manager",
+  },
+  {
     image: "manual-testing-1.png",
     position: "TC - Manual Testing - Swaglabs",
     location: "Green Technology",
     description:
       "Developed and executed detailed manual test cases for Swaglabs to ensure a seamless user experience. Employed robust methodologies to identify and report bugs, contributing to higher software quality and user satisfaction.",
     technologies: ["Ms.Excel", "Trello"],
-    pathUrl: "https://docs.google.com/spreadsheets/d/1KqgfKW8M_WiRl7u-X8BO6Gg3OBntm8y-/edit?usp=sharing&ouid=108158415023787508210&rtpof=true&sd=true",
+    pathUrl:
+      "https://docs.google.com/spreadsheets/d/1KqgfKW8M_WiRl7u-X8BO6Gg3OBntm8y-/edit?usp=sharing&ouid=108158415023787508210&rtpof=true&sd=true",
   },
   {
     image: "manual-testing-2.png",
@@ -15,7 +25,8 @@ export const projectData = [
     description:
       "Performed comprehensive manual testing on various functionalities of Facebook, Gmail, and Google platforms to ensure optimal performance and user experience. Created detailed test cases and meticulously documented bugs and issues, providing valuable feedback to the development team for further improvements.",
     technologies: ["Ms.Excel"],
-    pathUrl: "https://docs.google.com/spreadsheets/d/1RroqSQHTnQgIEOI0-9yaTXC-BNY8FGhHVrJoiws_wLU/edit?usp=sharing",
+    pathUrl:
+      "https://docs.google.com/spreadsheets/d/1RroqSQHTnQgIEOI0-9yaTXC-BNY8FGhHVrJoiws_wLU/edit?usp=sharing",
   },
   {
     image: "api-testing-1.png",
@@ -24,7 +35,8 @@ export const projectData = [
     description:
       "Conducted comprehensive API testing for the Harvests project, ensuring robust and reliable performance of backend services. Utilized Postman for creating, executing, and automating API test cases. Documented results and tracked progress using Ms.Excel and Trello, enhancing collaboration and transparency.",
     technologies: ["Ms.Excel", "Trello", "Postman API"],
-    pathUrl: "https://drive.google.com/drive/folders/1qoYuzL_bXIU3Is1pIuCBM1rO82IiM6sW?usp=sharing",
+    pathUrl:
+      "https://drive.google.com/drive/folders/1qoYuzL_bXIU3Is1pIuCBM1rO82IiM6sW?usp=sharing",
   },
   {
     image: "api-project-1.png",
