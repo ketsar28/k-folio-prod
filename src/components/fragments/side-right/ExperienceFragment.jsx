@@ -17,7 +17,7 @@ const ExperienceFragment = () => {
               key={index}
               className="flex md:flex-row flex-col justify-start items-start text-white gap-2 hover:bg-slate-600/20 py-6 lg:px-8 hover:px-8 rounded-2xl transition-all duration-200 ease-linear group"
             >
-              <p className="text-[14px] font-medium uppercase w-[45%] text-left text-[#8c99ab]">
+              <p className="text-[14px] font-medium uppercase w-[100%] md:w-[55%] lg:w-[45%] text-left text-[#8c99ab]">
                 {date}
               </p>
               <div className="space-y-3 w-full">
