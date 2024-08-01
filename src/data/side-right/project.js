@@ -77,7 +77,7 @@ export const projectData = [
   {
     image: "company-profile-2.png",
     position: "CEI Company Profile",
-    location: "Pt. Conexat Ekstra Indonesia",
+    location: "PT. Conexat Ekstra Indonesia",
     description:
       "I am tasked with developing an engaging company profile website featuring an intuitive, user-friendly, and responsive design. The website I am creating is aimed at providing comprehensive information about the company and its various service offerings. From software and hardware solutions to SMS services and interior design, the website is designed to offer a detailed overview of the diverse offerings provided by the company.",
     technologies: ["React JS", "Tailwind CSS"],
