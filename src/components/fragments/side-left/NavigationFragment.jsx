@@ -27,7 +27,7 @@ const NavigationFragment = () => {
             offset={-70}
             spy={true}
             onSetActive={handleSetActive}
-            className="group flex justify-start items-center gap-5 cursor-pointer p-2"
+            className="group flex justify-start items-center gap-5 cursor-pointer md:p-2 py-2"
             onClick={handleClick} // Menambahkan event onClick untuk setiap navigasi
           >
             <div
