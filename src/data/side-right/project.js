@@ -1,5 +1,15 @@
 export const projectData = [
   {
+    image: "figma-design-mobile-1.png",
+    position: "Mobile App Design - Wallet App",
+    location: "Self Project",
+    description:
+      "Developed a modern and user-friendly wallet mobile application design using Figma. The project emphasizes intuitive navigation, seamless user experience, and a sleek, contemporary visual style that caters to users' needs in managing their finances and tracking transactions.",
+    technologies: ["Figma"],
+    pathUrl:
+      "https://www.figma.com/design/qqEAHgDZacVlSQquZM7l3V/Wallet-App-Design?node-id=82-1949&t=qIGUbPwEeCXjdFzv-1",
+  },
+  {
     image: "automation-testing-1.png",
     position: "Automation Testing - AceOnlineShoePortal",
     location: "Self Project",
