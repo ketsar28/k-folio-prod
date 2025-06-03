@@ -1,73 +1,216 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { Element } from "react-scroll";
 import { getImageUrl } from "../../../utils/getAsset";
 import { projectData } from "../../../data/side-right/project";
-import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+
+const ProjectCard = ({ project, index }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const { image, position, location, description, technologies, pathUrl } =
+    project;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      className="group relative h-[400px] rounded-2xl overflow-hidden"
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+    >
+      {/* Background Image with Gradient Overlay */}
+      <div className="absolute inset-0 w-full h-full">
+        <motion.img
+          src={getImageUrl(image)}
+          alt={position}
+          className="w-full h-full object-cover object-center"
+          initial={{ scale: 1 }}
+          animate={{ scale: isHovered ? 1.1 : 1 }}
+          transition={{ duration: 0.4 }}
+        />
+        {/* Enhanced gradient overlay for better text visibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/40" />
+      </div>
+
+      {/* Content Container */}
+      <motion.a
+        href={pathUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="absolute inset-0 w-full h-full p-6 flex flex-col justify-end group-hover:bg-black/20 transition-colors duration-300"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        {/* Project Info */}
+        <motion.div className="relative z-10 transform transition-transform duration-300 group-hover:translate-y-[-8px]">
+          {/* Technologies */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {technologies.slice(0, 3).map((tech, techIndex) => (
+              <span
+                key={techIndex}
+                className="px-3 py-1 text-xs font-medium rounded-full 
+                         bg-white/10 text-white 
+                         backdrop-blur-sm group-hover:bg-[var(--primary)] 
+                         group-hover:text-white transition-all duration-300"
+              >
+                {tech}
+              </span>
+            ))}
+            {technologies.length > 3 && (
+              <span
+                className="px-3 py-1 text-xs font-medium rounded-full 
+                           bg-white/10 text-white
+                           backdrop-blur-sm group-hover:bg-[var(--primary)]
+                           group-hover:text-white transition-all duration-300"
+              >
+                +{technologies.length - 3}
+              </span>
+            )}
+          </div>
+
+          {/* Title & Location */}
+          <h3
+            className="text-2xl font-bold text-white mb-2 
+                      group-hover:text-[var(--primary)] transition-colors duration-300"
+          >
+            {position}
+          </h3>
+          <p
+            className="text-white/80 mb-4 
+                     group-hover:text-white transition-colors duration-300"
+          >
+            {location}
+          </p>
+
+          {/* Description */}
+          <p
+            className="text-white/70 line-clamp-2 mb-4 
+                     group-hover:text-white/90 transition-colors duration-300"
+          >
+            {description}
+          </p>
+
+          {/* View Project Button */}
+          <motion.div
+            className="inline-flex items-center gap-2 text-gray-50 
+                     font-medium group-hover:text-white transition-colors duration-300
+                     bg-white/20 group-hover:bg-blue-500 px-4 py-2 rounded-lg backdrop-blur-sm"
+            initial={{ x: 0 }}
+            animate={{ x: isHovered ? 2 : 0 }}
+          >
+            View Project
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          </motion.div>
+        </motion.div>
+      </motion.a>
+    </motion.div>
+  );
+};
+
+ProjectCard.propTypes = {
+  project: PropTypes.shape({
+    image: PropTypes.string.isRequired,
+    position: PropTypes.string.isRequired,
+    location: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    technologies: PropTypes.arrayOf(PropTypes.string).isRequired,
+    pathUrl: PropTypes.string.isRequired,
+  }).isRequired,
+  index: PropTypes.number.isRequired,
+};
 
 const ProjectFragment = () => {
   return (
-    <Element
-      name="project"
-      className="text-justify font-medium text-lg py-10 space-y-10 font-inter"
-      id="project"
-    >
-      {projectData.length > 0 &&
-        projectData.map(
-          (
-            { image, position, location, description, technologies, pathUrl },
-            index
-          ) => (
-            <a
-              href={pathUrl}
-              target="_blank"
-              key={index}
-              className="flex md:flex-row flex-col justify-start items-start text-white gap-5 hover:bg-slate-600/20 py-6 lg:px-8 hover:px-8 rounded-2xl transition-all duration-200 ease-linear group"
-            >
-              <div className="w-[40%] rounded-2xl overflow-hidden">
-                <img
-                  src={getImageUrl(image)}
-                  className="w-full h-full object-fill object-center"
-                  alt=""
-                />
-              </div>
-              <div className="space-y-3 w-full">
-                <h3 className="font-semibold text-[16px] text-[#D5DCE9] group-hover:text-green-500 transition-all duration-200 ease-linear relative">
-                  {position} &#8226; <span>{location}</span>{" "}
-                  <span className="ml-1 group-hover:translate-x-2 absolute transition-all duration-200 ease-linear">
-                    &#129125;
-                  </span>
-                </h3>
-                <p className="text-[14px] group-hover:text-[#D5DCE9] text-[#8c99ab] leading-normal">
-                  {description}
-                </p>
-                <div className="flex flex-wrap justify-start items-center gap-5 pt-5">
-                  {technologies.length > 0 &&
-                    technologies.map((item, index) => (
-                      <li
-                        key={index}
-                        className="px-3 rounded-full text-green-500 font-semibold text-[12px] list-none bg-green-500/10 cursor-pointer hover:bg-green-700/40 transition-all duration-200 ease-linear hover:text-white"
-                      >
-                        {item}
-                      </li>
-                    ))}
-                </div>
-              </div>
-            </a>
-          )
-        )}
-      <div>
-        <a
-          target="_blank"
-          href="https://github.com/ketsar28?tab=repositories"
-          className="text-[16px] font-bold text-[#D5DCE9] hover:text-green-500 transition-all duration-200 ease-linear text-justify py-6 lg:px-8 group"
+    <Element name="project" className="min-h-screen py-16" id="project">
+      <motion.div
+        className="space-y-12"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Section Header */}
+        <div className="text-left mb-8">
+          <motion.h2
+            className="text-3xl font-bold text-[var(--text-primary)] mb-4"
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            Featured Projects
+          </motion.h2>
+          {/* <motion.p
+            className="text-[var(--text-secondary)] max-w-2xl mx-auto"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            Explore some of my recent work and personal projects
+          </motion.p> */}
+        </div>
+
+        {/* Projects Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {projectData.length > 0 &&
+            projectData.map((project, index) => (
+              <ProjectCard key={index} project={project} index={index} />
+            ))}
+        </div>
+
+        {/* View More Projects Link */}
+        <motion.div
+          className="pt-16 text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
         >
-          View Full Project Archive{" "}
-          <span className="ml-3 group-hover:translate-x-2 absolute transition-all duration-200 ease-linear">
-            &#129125;
-          </span>
-        </a>
-      </div>
+          <motion.a
+            href="https://github.com/ketsar28?tab=repositories"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-full
+                     bg-[var(--primary)] text-white font-medium
+                     hover:bg-[var(--primary-dark)] transition-all duration-300
+                     hover:shadow-lg hover:shadow-[var(--primary)]/20"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            View More Projects
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          </motion.a>
+        </motion.div>
+      </motion.div>
     </Element>
   );
 };

@@ -1,3 +1,124 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Light mode colors */
+  --primary-light: #2563eb;
+  --primary-dark-light: #1d4ed8;
+  --secondary-light: #64748b;
+  --bg-light-light: #ffffff;
+  --bg-dark-light: #f8fafc;
+  --text-primary-light: #1e293b;
+  --text-secondary-light: #475569;
+  --accent-light: #3b82f6;
+
+  /* Dark mode colors */
+  --primary-dark: #60a5fa;
+  --primary-dark-dark: #3b82f6;
+  --secondary-dark: #94a3b8;
+  --bg-dark-dark: #0f172a;
+  --bg-light-dark: #1e293b;
+  --text-primary-dark: #f1f5f9;
+  --text-secondary-dark: #94a3b8;
+  --accent-dark: #60a5fa;
+
+  /* Default to light mode */
+  --primary: var(--primary-light);
+  --primary-dark: var(--primary-dark-light);
+  --secondary: var(--secondary-light);
+  --bg-dark: var(--bg-dark-light);
+  --bg-light: var(--bg-light-light);
+  --text-primary: var(--text-primary-light);
+  --text-secondary: var(--text-secondary-light);
+  --accent: var(--accent-light);
+}
+
+/* Dark mode styles */
+:root.dark {
+  --primary: var(--primary-dark);
+  --primary-dark: var(--primary-dark-dark);
+  --secondary: var(--secondary-dark);
+  --bg-dark: var(--bg-dark-dark);
+  --bg-light: var(--bg-light-dark);
+  --text-primary: var(--text-primary-dark);
+  --text-secondary: var(--text-secondary-dark);
+  --accent: var(--accent-dark);
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--bg-dark)] text-[var(--text-primary)] font-['Inter',sans-serif] transition-colors duration-300;
+  }
+}
+
+@layer components {
+  .section-title {
+    @apply text-2xl font-bold mb-6 text-[var(--text-primary)];
+  }
+  
+  .card {
+    @apply bg-[var(--bg-light)] rounded-xl p-6 hover:shadow-lg transition-all duration-300;
+  }
+
+  .nav-link {
+    @apply text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white px-6 py-2 rounded-lg transition-all duration-200;
+  }
+
+  /* Theme toggle button */
+  .theme-toggle {
+    @apply fixed top-4 right-4 z-50 p-2 rounded-full bg-[var(--bg-light)] text-[var(--text-primary)] hover:bg-[var(--bg-dark)] transition-all duration-200;
+  }
+
+  /* 3D Transform Utilities */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
+  /* Line clamp for consistent text heights */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.5s ease;
+}
+
+/* Glass effect for cards */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .glass-effect {
+  background: rgba(0, 0, 0, 0.2);
+}
