@@ -1,6 +1,7 @@
 export const headData = {
-  image: "4.jpg",
+  image: "me.jpeg",
   title: "Muhammad Ketsar Ali Abi Wahid",
-  role: "Software Quality Assurance",
-  description: "Ensuring Excellence in Every Line of Code",
+  role: "Data Scientist",
+  description:
+    "Transforming Data into Actionable Business Strategy and High-Impact Solutions.",
 };

@@ -7,22 +7,10 @@ import { experienceData } from "../../../data/side-right/experience";
 const ExperienceFragment = () => {
   return (
     <Element name="experience" className="min-h-screen py-16" id="experience">
-      <motion.div
-        className="space-y-12"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.h2
-          className="text-3xl font-bold text-[var(--text-primary)] mb-12"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
+      <div className="space-y-12">
+        <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-12">
           Experience
-        </motion.h2>
+        </h2>
 
         <div className="space-y-12">
           {experienceData.length > 0 &&
@@ -31,62 +19,34 @@ const ExperienceFragment = () => {
                 { date, position, location, description, technologies },
                 index
               ) => (
-                <motion.div
+                <div
                   key={index}
                   className="relative pl-8 border-l-2 border-[var(--bg-light)] group"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.2 }}
                 >
                   {/* Timeline Dot */}
                   <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-[var(--bg-light)] border-2 border-[var(--primary)] group-hover:bg-[var(--primary)] transition-colors duration-300" />
 
-                  <div className="card group-hover:border-[var(--primary)] border border-transparent transition-all duration-300">
+                  <div className="card group-hover:border-[var(--primary)] border border-transparent transition-all duration-300 shadow-lg">
                     {/* Date */}
-                    <motion.p
-                      className="text-sm font-medium text-[var(--primary)] mb-2"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.3 }}
-                    >
+                    <p className="text-sm font-medium text-[var(--primary)] mb-2">
                       {date}
-                    </motion.p>
+                    </p>
 
                     {/* Position & Location */}
-                    <motion.h3
-                      className="text-xl font-semibold text-[var(--text-primary)] mb-2 group-hover:text-[var(--primary)] transition-colors duration-300"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.4 }}
-                    >
+                    <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2 group-hover:text-[var(--primary)] transition-colors duration-300">
                       {position}
                       <span className="text-[var(--text-secondary)] text-lg ml-2">
                         • {location}
                       </span>
-                    </motion.h3>
+                    </h3>
 
                     {/* Description */}
-                    <motion.p
-                      className="text-[var(--text-secondary)] mb-4 leading-relaxed"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.5 }}
-                    >
+                    <p className="text-[var(--text-secondary)] mb-4 leading-relaxed">
                       {description}
-                    </motion.p>
+                    </p>
 
                     {/* Technologies */}
-                    <motion.div
-                      className="flex flex-wrap gap-2"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.6 }}
-                    >
+                    <div className="flex flex-wrap gap-2">
                       {technologies.length > 0 &&
                         technologies.map((tech, techIndex) => (
                           <span
@@ -96,24 +56,18 @@ const ExperienceFragment = () => {
                             {tech}
                           </span>
                         ))}
-                    </motion.div>
+                    </div>
                   </div>
-                </motion.div>
+                </div>
               )
             )}
         </div>
 
         {/* Resume Link */}
-        <motion.div
-          className="pt-8"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.7 }}
-        >
+        <div className="pt-8">
           <a
             target="_blank"
-            href="https://drive.google.com/file/d/1BFutuOLLmtW99tv0chN2XAruus8d1EAR/view?usp=sharing"
+            href="https://drive.google.com/file/d/1SotOUrNdH8M1EAnylLl84432654vvZRe/view?usp=sharing"
             className="btn-primary inline-flex items-center group"
             rel="noreferrer"
           >
@@ -132,8 +86,8 @@ const ExperienceFragment = () => {
               />
             </svg>
           </a>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </Element>
   );
 };

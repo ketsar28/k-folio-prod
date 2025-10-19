@@ -13,19 +13,14 @@ const NavigationFragment = () => {
 
   return (
     <motion.nav
-      className="space-y-2 py-4 sticky top-8"
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-2 py-4 sticky top-8"
     >
       {navigationData.length > 0 &&
         navigationData.map((item, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
-          >
+          <div key={index}>
             <Link
               activeClass="active"
               to={item.href}
@@ -63,7 +58,7 @@ const NavigationFragment = () => {
                 {item.label}
               </span>
             </Link>
-          </motion.div>
+          </div>
         ))}
     </motion.nav>
   );

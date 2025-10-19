@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
+import { Link } from "react-scroll";
 import { motion } from "framer-motion";
 import { headData } from "../../../data/side-left/head";
 import { getImageUrl } from "../../../utils/getAsset";
@@ -25,10 +26,9 @@ const HeadFragment = () => {
       <div className="space-y-3">
         {headData.title && (
           <motion.h1
-            className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] bg-clip-text text-transparent"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
+            className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] bg-clip-text text-transparent"
           >
             {headData.title}
           </motion.h1>
@@ -36,10 +36,9 @@ const HeadFragment = () => {
 
         {headData.role && (
           <motion.h2
-            className="text-xl sm:text-2xl font-semibold text-[var(--text-secondary)]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
+            className="text-xl sm:text-2xl font-semibold text-[var(--text-secondary)]"
           >
             {headData.role}
           </motion.h2>
@@ -49,10 +48,9 @@ const HeadFragment = () => {
       {/* Description */}
       {headData.description && (
         <motion.p
-          className="text-[var(--text-secondary)] text-lg leading-relaxed"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+          className="text-[var(--text-secondary)] text-lg leading-relaxed"
         >
           {headData.description}
         </motion.p>
@@ -60,20 +58,21 @@ const HeadFragment = () => {
 
       {/* Contact/Social Links */}
       <motion.div
-        className="flex gap-4 pt-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        className="flex gap-4 pt-4"
       >
         <a href="mailto:muhammadketsar45@gmail.com" className="btn-primary">
           Contact Me
         </a>
-        <a
-          href="#projects"
-          className="px-6 py-2 rounded-lg border-2 border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-all duration-200"
+        <Link
+          to="project"
+          smooth={true}
+          duration={800}
+          className="px-6 py-2 cursor-pointer rounded-lg border-2 border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-all duration-200"
         >
           View Projects
-        </a>
+        </Link>
       </motion.div>
     </motion.div>
   );

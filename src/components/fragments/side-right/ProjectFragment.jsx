@@ -13,10 +13,6 @@ const ProjectCard = ({ project, index }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1 }}
       className="group relative h-[400px] rounded-2xl overflow-hidden"
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
@@ -41,12 +37,9 @@ const ProjectCard = ({ project, index }) => {
         target="_blank"
         rel="noreferrer"
         className="absolute inset-0 w-full h-full p-6 flex flex-col justify-end group-hover:bg-black/20 transition-colors duration-300"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
       >
         {/* Project Info */}
-        <motion.div className="relative z-10 transform transition-transform duration-300 group-hover:translate-y-[-8px]">
+        <div className="relative z-10 transform transition-transform duration-300 group-hover:translate-y-[-8px]">
           {/* Technologies */}
           <div className="flex flex-wrap gap-2 mb-4">
             {technologies.slice(0, 3).map((tech, techIndex) => (
@@ -117,7 +110,7 @@ const ProjectCard = ({ project, index }) => {
               />
             </svg>
           </motion.div>
-        </motion.div>
+        </div>
       </motion.a>
     </motion.div>
   );
@@ -138,30 +131,15 @@ ProjectCard.propTypes = {
 const ProjectFragment = () => {
   return (
     <Element name="project" className="min-h-screen py-16" id="project">
-      <motion.div
-        className="space-y-12"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
+      <div className="space-y-12">
         {/* Section Header */}
         <div className="text-left mb-8">
-          <motion.h2
-            className="text-3xl font-bold text-[var(--text-primary)] mb-4"
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-          >
+          <motion.h2 className="text-3xl font-bold text-[var(--text-primary)] mb-4">
             Featured Projects
           </motion.h2>
           {/* <motion.p
             className="text-[var(--text-secondary)] max-w-2xl mx-auto"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
+            
           >
             Explore some of my recent work and personal projects
           </motion.p> */}
@@ -176,13 +154,7 @@ const ProjectFragment = () => {
         </div>
 
         {/* View More Projects Link */}
-        <motion.div
-          className="pt-16 text-center"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-        >
+        <div className="pt-16 text-center">
           <motion.a
             href="https://github.com/ketsar28?tab=repositories"
             target="_blank"
@@ -209,8 +181,8 @@ const ProjectFragment = () => {
               />
             </svg>
           </motion.a>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </Element>
   );
 };
