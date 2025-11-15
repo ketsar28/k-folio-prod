@@ -11,4 +11,16 @@ export const navigationData = [
     label: "Project",
     href: "project",
   },
+  {
+    label: "Blog",
+    href: "blog",
+  },
+  {
+    label: "Testimonials",
+    href: "testimonials",
+  },
+  {
+    label: "Contact",
+    href: "contact",
+  },
 ];

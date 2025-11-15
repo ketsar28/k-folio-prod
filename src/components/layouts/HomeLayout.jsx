@@ -6,7 +6,11 @@ import AboutFragment from "../fragments/side-right/AboutFragment";
 import NavigationFragment from "../fragments/side-left/NavigationFragment";
 import ExperienceFragment from "../fragments/side-right/ExperienceFragment";
 import ProjectFragment from "../fragments/side-right/ProjectFragment";
+import BlogFragment from "../fragments/side-right/BlogFragment";
+import TestimonialsFragment from "../fragments/side-right/TestimonialsFragment";
+import ContactFragment from "../fragments/side-right/ContactFragment";
 import FooterFragment from "../fragments/side-right/FooterFragment";
+import Footer from "../common/Footer";
 
 const fadeInUp = {
   initial: { y: 20, opacity: 0 },
@@ -55,11 +59,20 @@ const HomeLayout = () => {
               <ProjectFragment />
             </motion.div>
             <motion.div variants={fadeInUp}>
-              <FooterFragment />
+              <BlogFragment />
+            </motion.div>
+            <motion.div variants={fadeInUp}>
+              <TestimonialsFragment />
+            </motion.div>
+            <motion.div variants={fadeInUp}>
+              <ContactFragment />
             </motion.div>
           </motion.div>
         </div>
       </div>
+
+      {/* Enhanced Footer */}
+      <Footer />
     </div>
   );
 };
