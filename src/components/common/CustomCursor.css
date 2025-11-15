@@ -1,0 +1,71 @@
+/* Hide default cursor */
+body,
+body * {
+  cursor: none !important;
+}
+
+/* Custom cursor styles */
+.custom-cursor {
+  position: fixed;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--primary) 0%,
+    var(--accent) 50%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  border: 2px solid var(--primary);
+}
+
+.custom-cursor-glow {
+  position: fixed;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.3) 0%,
+    rgba(59, 130, 246, 0.1) 50%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 9998;
+  filter: blur(10px);
+}
+
+/* Dark mode adjustments */
+:root.dark .custom-cursor {
+  background: radial-gradient(
+    circle,
+    var(--primary) 0%,
+    var(--accent) 50%,
+    transparent 70%
+  );
+}
+
+:root.dark .custom-cursor-glow {
+  background: radial-gradient(
+    circle,
+    rgba(96, 165, 250, 0.4) 0%,
+    rgba(96, 165, 250, 0.2) 50%,
+    transparent 70%
+  );
+}
+
+/* Mobile devices - show default cursor */
+@media (hover: none) and (pointer: coarse) {
+  body,
+  body * {
+    cursor: auto !important;
+  }
+
+  .custom-cursor,
+  .custom-cursor-glow {
+    display: none;
+  }
+}
