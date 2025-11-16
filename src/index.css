@@ -72,9 +72,28 @@
     @apply bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white px-6 py-2 rounded-lg transition-all duration-200;
   }
 
-  /* Theme toggle button */
+  /* Theme toggle button - Always visible */
   .theme-toggle {
-    @apply fixed top-4 right-4 z-50 p-2 rounded-full bg-[var(--bg-light)] text-[var(--text-primary)] hover:bg-[var(--bg-dark)] transition-all duration-200;
+    @apply fixed top-6 right-6 z-[9990] p-3 rounded-full bg-[var(--bg-light)] text-[var(--text-primary)] hover:bg-[var(--bg-dark)] transition-all duration-200 shadow-lg hover:shadow-xl;
+    border: 2px solid var(--primary);
+  }
+
+  /* Responsive theme toggle */
+  @media (max-width: 768px) {
+    .theme-toggle {
+      @apply top-4 right-4 p-2.5;
+    }
+  }
+
+  /* Responsive utilities for better mobile experience */
+  @media (max-width: 640px) {
+    .section-title {
+      @apply text-xl;
+    }
+
+    .card {
+      @apply p-4;
+    }
   }
 
   /* 3D Transform Utilities */
@@ -108,9 +127,14 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Smooth transitions for theme changes */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.5s ease;
+/* Smooth transitions for theme changes - optimized for better performance */
+*:not(.no-transition) {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Only apply transform transitions to elements that need it */
+button, a, .card, nav {
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.3s ease;
 }
 
 /* Enhanced Glass effect for cards */

@@ -48,19 +48,19 @@ const CustomCursor = () => {
 
   const cursorVariants = {
     default: {
-      x: mousePosition.x - 16,
-      y: mousePosition.y - 16,
+      x: mousePosition.x - 10,
+      y: mousePosition.y - 10,
       scale: 1,
     },
     hovering: {
-      x: mousePosition.x - 24,
-      y: mousePosition.y - 24,
-      scale: 1.5,
+      x: mousePosition.x - 16,
+      y: mousePosition.y - 16,
+      scale: 1.3,
     },
     clicking: {
-      x: mousePosition.x - 12,
-      y: mousePosition.y - 12,
-      scale: 0.8,
+      x: mousePosition.x - 8,
+      y: mousePosition.y - 8,
+      scale: 0.7,
     },
   };
 
@@ -75,9 +75,9 @@ const CustomCursor = () => {
         animate={currentVariant}
         transition={{
           type: "spring",
-          stiffness: 500,
-          damping: 28,
-          mass: 0.5,
+          stiffness: 800,
+          damping: 35,
+          mass: 0.3,
         }}
       />
 
@@ -85,14 +85,14 @@ const CustomCursor = () => {
       <motion.div
         className="custom-cursor-glow"
         animate={{
-          x: mousePosition.x - 32,
-          y: mousePosition.y - 32,
+          x: mousePosition.x - 20,
+          y: mousePosition.y - 20,
         }}
         transition={{
           type: "spring",
-          stiffness: 150,
-          damping: 15,
-          mass: 0.1,
+          stiffness: 200,
+          damping: 20,
+          mass: 0.15,
         }}
       />
     </>
