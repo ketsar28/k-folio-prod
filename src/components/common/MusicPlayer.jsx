@@ -233,7 +233,7 @@ const MusicPlayer = () => {
         {/* Placeholder - You'll need to add your music file */}
         {/* <source src="/music/lofi-background.mp3" type="audio/mpeg" /> */}
         <source
-          src="https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3"
+          src="tyb.mp3"
           type="audio/mpeg"
         />
       </audio>

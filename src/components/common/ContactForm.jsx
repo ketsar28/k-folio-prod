@@ -27,13 +27,28 @@ const ContactForm = () => {
     try {
       // EmailJS configuration
       // Replace with your actual EmailJS credentials
-      const serviceId = "YOUR_SERVICE_ID"; // Replace with your EmailJS service ID
-      const templateId = "YOUR_TEMPLATE_ID"; // Replace with your EmailJS template ID
-      const publicKey = "YOUR_PUBLIC_KEY"; // Replace with your EmailJS public key
+      const serviceId = "service_jd9c5x5"; // Replace with your EmailJS service ID
+      const contactTemplateId = "template_py7cmyj";
+      const autoReplyTemplateId = "template_vycdlpq"; // Auto-reply
+
+      const publicKey = "FXX2RU8htzBtGiKH4"; // Replace with your EmailJS public key
 
       await emailjs.send(
         serviceId,
-        templateId,
+        contactTemplateId,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          to_name: "Ketsar",
+        },
+        publicKey
+      );
+
+      await emailjs.send(
+        serviceId,
+        autoReplyTemplateId,
         {
           from_name: formData.name,
           from_email: formData.email,
