@@ -26,13 +26,12 @@ const ContactForm = () => {
 
     try {
       // EmailJS configuration
-      // Replace with your actual EmailJS credentials
-      const serviceId = "service_jd9c5x5"; // Replace with your EmailJS service ID
-      const contactTemplateId = "template_py7cmyj";
-      const autoReplyTemplateId = "template_vycdlpq"; // Auto-reply
+      const serviceId = "service_jd9c5x5";
+      const contactTemplateId = "template_py7cmyj";  // Email to you
+      const autoReplyTemplateId = "template_vycdlpq"; // Auto-reply to visitor
+      const publicKey = "FXX2RU8htzBtGiKH4";
 
-      const publicKey = "FXX2RU8htzBtGiKH4"; // Replace with your EmailJS public key
-
+      // 1. Send email to you (Ketsar)
       await emailjs.send(
         serviceId,
         contactTemplateId,
@@ -46,6 +45,7 @@ const ContactForm = () => {
         publicKey
       );
 
+      // 2. Send auto-reply to visitor
       await emailjs.send(
         serviceId,
         autoReplyTemplateId,
@@ -53,21 +53,24 @@ const ContactForm = () => {
           from_name: formData.name,
           from_email: formData.email,
           subject: formData.subject,
-          message: formData.message,
           to_name: "Ketsar",
+          reply_to: formData.email, // Important for auto-reply
         },
         publicKey
       );
 
-      toast.success("Message sent successfully! I'll get back to you soon.", {
-        duration: 5000,
-        position: "bottom-right",
-        style: {
-          background: "var(--bg-light)",
-          color: "var(--text-primary)",
-          border: "2px solid var(--primary)",
-        },
-      });
+      toast.success(
+        "✅ Message sent successfully! Check your email for confirmation. I'll respond within 24-48 hours.",
+        {
+          duration: 6000,
+          position: "bottom-right",
+          style: {
+            background: "var(--bg-light)",
+            color: "var(--text-primary)",
+            border: "2px solid var(--primary)",
+          },
+        }
+      );
 
       // Reset form
       setFormData({
@@ -78,8 +81,14 @@ const ContactForm = () => {
       });
     } catch (error) {
       console.error("Error sending email:", error);
-      toast.error("Failed to send message. Please try again or contact me directly.", {
-        duration: 5000,
+
+      // More detailed error message
+      const errorMessage = error.text
+        ? `Failed to send message: ${error.text}`
+        : "Failed to send message. Please try again or contact me directly via WhatsApp.";
+
+      toast.error(errorMessage, {
+        duration: 7000,
         position: "bottom-right",
         style: {
           background: "var(--bg-light)",

@@ -127,8 +127,8 @@ const MusicPlayer = () => {
       <motion.div
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`fixed bottom-6 right-6 z-[9999] ${
-          isMinimized ? "w-16 h-16" : "w-80"
+        className={`fixed bottom-4 left-4 z-[9980] md:bottom-6 md:left-6 ${
+          isMinimized ? "w-14 h-14 md:w-16 md:h-16" : "w-72 sm:w-80 max-w-[calc(100vw-2rem)]"
         }`}
       >
         <div className="bg-[var(--bg-light)] backdrop-blur-lg rounded-2xl shadow-2xl border border-[var(--primary)]/20 overflow-hidden">
@@ -146,7 +146,7 @@ const MusicPlayer = () => {
             </button>
           ) : (
             // Expanded View
-            <div className="p-4">
+            <div className="p-3 sm:p-4">
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
