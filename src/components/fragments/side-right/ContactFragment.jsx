@@ -22,7 +22,7 @@ const ContactFragment = () => {
             Get In Touch
           </h2>
           <p className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto">
-            Have a project in mind or want to collaborate? I'd love to hear from you!
+            Have a project in mind or want to collaborate? I would love to hear from you!
           </p>
         </motion.div>
 
@@ -128,7 +128,7 @@ const ContactFragment = () => {
                 </p>
               </div>
               <p className="text-sm text-green-600 dark:text-green-400">
-                I'm currently available for new projects and collaborations. Let's create something
+                I am currently available for new projects and collaborations. Lets create something
                 amazing together!
               </p>
             </motion.div>
