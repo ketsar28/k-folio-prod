@@ -185,7 +185,7 @@ const Footer = () => {
         >
           {/* Copyright */}
           <p className="text-sm text-[var(--text-secondary)]">
-            © {currentYear} Muhammad Ketsar Ali Abi Wahid. All rights reserved.
+            © {currentYear} Ketsar.AI (Muhammad Ketsar Ali). All rights reserved.
           </p>
 
           {/* Built With */}

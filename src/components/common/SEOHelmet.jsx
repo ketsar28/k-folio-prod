@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 
 const SEOHelmet = () => {
-  const siteTitle = "Muhammad Ketsar Ali Abi Wahid | Data Scientist & ML Engineer";
+  const siteTitle = "Ketsar.AI | Data Scientist & ML Engineer";
   const siteDescription =
     "Data Scientist specializing in Machine Learning and Optimization. Transforming data into actionable business strategies and high-impact solutions. Experienced in Python, Deep Learning, and Production ML Deployment.";
   const siteUrl = "https://k-folio-prod.vercel.app";

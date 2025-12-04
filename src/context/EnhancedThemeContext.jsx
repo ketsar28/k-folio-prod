@@ -11,6 +11,31 @@ export const ThemeProvider = ({ children }) => {
 
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  const [primaryColor, setPrimaryColor] = useState(() => {
+    return localStorage.getItem("primaryColor") || "indigo";
+  });
+
+  const colors = {
+    indigo: { primary: "#4f46e5", hover: "#4338ca", accent: "#8b5cf6" },
+    emerald: { primary: "#10b981", hover: "#059669", accent: "#34d399" },
+    rose: { primary: "#f43f5e", hover: "#e11d48", accent: "#fb7185" },
+    amber: { primary: "#f59e0b", hover: "#d97706", accent: "#fbbf24" },
+    cyan: { primary: "#06b6d4", hover: "#0891b2", accent: "#22d3ee" },
+  };
+
+  useEffect(() => {
+    const root = document.documentElement;
+    // Safety check: if primaryColor is invalid, fallback to 'indigo'
+    const colorKey = colors[primaryColor] ? primaryColor : "indigo";
+    const color = colors[colorKey];
+
+    root.style.setProperty("--primary", color.primary);
+    root.style.setProperty("--primary-hover", color.hover);
+    root.style.setProperty("--accent", color.accent);
+    
+    localStorage.setItem("primaryColor", colorKey);
+  }, [primaryColor]);
+
   useEffect(() => {
     const applyTheme = () => {
       const root = document.documentElement;
@@ -23,11 +48,14 @@ export const ThemeProvider = ({ children }) => {
       }
 
       setIsDarkMode(shouldBeDark);
+      console.log(`Theme Update: Mode=${themeMode}, ShouldBeDark=${shouldBeDark}`);
 
       if (shouldBeDark) {
         root.classList.add("dark");
+        console.log("Added 'dark' class to html");
       } else {
         root.classList.remove("dark");
+        console.log("Removed 'dark' class from html");
       }
     };
 
@@ -65,14 +93,10 @@ export const ThemeProvider = ({ children }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ themeMode, isDarkMode, setTheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ themeMode, isDarkMode, setTheme, toggleTheme, primaryColor, setPrimaryColor, colors }}>
       {children}
     </ThemeContext.Provider>
   );
-};
-
-ThemeProvider.propTypes = {
-  children: PropTypes.node.isRequired,
 };
 
 export const useTheme = () => {
