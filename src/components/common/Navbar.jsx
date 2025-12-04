@@ -29,10 +29,10 @@ const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
-      // Improved centering: inset-x-0 mx-auto w-max ensures it stays in the middle without weird transforms
-      className="fixed top-6 inset-x-0 mx-auto z-[999] w-max max-w-[90%]"
+      // Improved centering: fixed inset-x-0 flex justify-center ensures absolute centering
+      className="fixed top-6 inset-x-0 z-[999] flex justify-center pointer-events-none"
     >
-      <div className={`glass-premium rounded-full px-6 py-3 flex items-center justify-between gap-8 transition-all duration-300 ${
+      <div className={`pointer-events-auto glass-premium rounded-full px-4 py-2 md:px-6 md:py-3 flex items-center justify-between gap-8 transition-all duration-300 ${
         scrolled ? "shadow-2xl bg-[var(--glass-bg)]/90" : "bg-[var(--glass-bg)]/50"
       }`}>
         {/* Logo */}
@@ -41,7 +41,7 @@ const Navbar = () => {
             K
           </div>
           <span className="font-bold text-lg tracking-tight group-hover:text-[var(--primary)] transition-colors">
-            Ketsar.AI
+            Ketsar Ali
           </span>
         </a>
 
@@ -73,30 +73,48 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="absolute top-full left-0 right-0 mt-4 p-4 glass-premium rounded-2xl md:hidden flex flex-col gap-2 shadow-2xl"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[998] bg-[var(--bg-main)]/95 backdrop-blur-xl md:hidden flex flex-col items-center justify-center space-y-8 pointer-events-auto"
           >
-            {navLinks.map((link) => (
-              <Link
+            {navLinks.map((link, index) => (
+              <motion.div
                 key={link.name}
-                to={link.to}
-                smooth={true}
-                duration={800}
-                offset={-100}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="px-4 py-3 rounded-xl text-center font-medium text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--bg-card)] transition-all cursor-pointer"
-                activeClass="!text-[var(--primary)] !bg-[var(--primary)]/10"
-                spy={true}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + index * 0.1 }}
               >
-                {link.name}
-              </Link>
+                <Link
+                  to={link.to}
+                  smooth={true}
+                  duration={800}
+                  offset={-100}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-3xl font-bold text-[var(--text-primary)] hover:text-[var(--primary)] transition-colors cursor-pointer"
+                  activeClass="text-[var(--primary)]"
+                  spy={true}
+                >
+                  {link.name}
+                </Link>
+              </motion.div>
             ))}
+            
+            {/* Close Button (Optional, but good UX) */}
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="absolute bottom-10 p-4 rounded-full bg-[var(--bg-card)] shadow-lg text-[var(--text-secondary)]"
+            >
+              <FaTimes size={24} />
+            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>

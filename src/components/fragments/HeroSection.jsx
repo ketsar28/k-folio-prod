@@ -23,29 +23,31 @@ const HeroSection = () => {
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: true }}
           className="space-y-6 text-center lg:text-left order-2 lg:order-1"
         >
           <div className="inline-block px-4 py-2 rounded-full glass-premium text-sm font-medium text-[var(--accent)] mb-4">
             Available for Collaboration
           </div>
           
-          <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
+          <h1 className="text-3xl lg:text-7xl font-bold leading-tight">
             Hi, I'm <span className="text-gradient">Ketsar Ali</span>
           </h1>
           
-          <div className="text-2xl lg:text-3xl font-medium text-[var(--text-secondary)] h-[80px] lg:h-[60px]">
-            I am <br className="lg:hidden" />
+          <div className="text-xl lg:text-3xl font-medium text-[var(--text-secondary)] h-[80px] lg:h-[60px]">
+            <span className="hidden lg:inline">I am </span>
+            <br className="lg:hidden" />
             <TypeAnimation
               sequence={[
                 "a Data Scientist",
                 2000,
-                "transforming data into insights",
+                "Data Insights",
                 2000,
-                "hunting bugs and ensuring quality",
+                "Quality Assurance",
                 2000,
-                "building robust ML models",
+                "ML Engineer",
                 2000,
-                "optimizing business strategies",
+                "Business Strategy",
                 2000,
               ]}
               wrapper="span"
@@ -60,14 +62,14 @@ const HeroSection = () => {
           </p>
 
           {/* Social Links */}
-          <div className="flex gap-4 justify-center lg:justify-start pt-4 flex-wrap">
+          <div className="flex gap-3 justify-center lg:justify-start pt-4 flex-wrap">
             {socials.map((social, index) => (
               <motion.a
                 key={index}
                 href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`p-4 rounded-full glass-premium text-xl transition-all duration-300 hover:scale-110 ${social.color}`}
+                className={`p-3 md:p-4 rounded-full glass-premium text-lg md:text-xl transition-all duration-300 hover:scale-110 ${social.color}`}
                 whileHover={{ y: -5 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -80,25 +82,39 @@ const HeroSection = () => {
           </div>
 
           <motion.div 
-            className="pt-8 flex gap-4 justify-center lg:justify-start"
+            className="pt-8 flex flex-col items-center lg:items-start gap-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1 }}
           >
-            <a 
-              href="#contact" 
-              className="px-8 py-3 rounded-full bg-[var(--primary)] text-white font-semibold hover:bg-[var(--primary-hover)] transition-all shadow-lg hover:shadow-[var(--primary)]/50"
-              data-cursor-text="Let's Talk"
+            <div className="flex gap-2 sm:gap-4">
+              <a 
+                href="#contact" 
+                className="px-5 py-2 md:px-8 md:py-3 rounded-full bg-[var(--primary)] text-white text-sm md:text-base font-semibold hover:bg-[var(--primary-hover)] transition-all shadow-lg hover:shadow-[var(--primary)]/30 whitespace-nowrap"
+                data-cursor-text="Let's Talk"
+              >
+                Contact Me
+              </a>
+              <a 
+                href="#portfolio" 
+                className="px-5 py-2 md:px-8 md:py-3 rounded-full glass-premium text-[var(--text-primary)] text-sm md:text-base font-semibold hover:bg-[var(--bg-card)] transition-all whitespace-nowrap"
+                data-cursor-text="View Work"
+              >
+                View Portfolio
+              </a>
+            </div>
+
+            {/* Scroll Indicator (Moved Here) */}
+            <motion.div
+              className="cursor-pointer hover:text-[var(--primary)] transition-colors"
+              animate={{ y: [0, 10, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              onClick={() => document.getElementById('about').scrollIntoView({ behavior: 'smooth' })}
             >
-              Contact Me
-            </a>
-            <a 
-              href="#portfolio" 
-              className="px-8 py-3 rounded-full glass-premium text-[var(--text-primary)] font-semibold hover:bg-[var(--bg-card)] transition-all"
-              data-cursor-text="View Work"
-            >
-              View Portfolio
-            </a>
+              <div className="w-6 h-10 rounded-full border-2 border-[var(--text-secondary)] flex justify-center p-1">
+                <div className="w-1 h-2 bg-[var(--text-secondary)] rounded-full" />
+              </div>
+            </motion.div>
           </motion.div>
         </motion.div>
 
@@ -107,9 +123,10 @@ const HeroSection = () => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
           className="relative order-1 lg:order-2 flex justify-center"
         >
-          <div className="relative w-72 h-72 lg:w-96 lg:h-96">
+          <div className="relative w-64 h-64 lg:w-96 lg:h-96">
             {/* Abstract Shapes behind */}
             <div className="absolute inset-0 bg-gradient-to-tr from-[var(--primary)] to-[var(--accent)] rounded-full blur-[80px] opacity-40 animate-pulse-glow" />
             
@@ -118,6 +135,8 @@ const HeroSection = () => {
               className="w-full h-full relative overflow-hidden border-4 border-[var(--primary)]/30 shadow-2xl shadow-[var(--primary)]/20"
               style={{ 
                 borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%",
+                willChange: "border-radius",
+                transform: "translateZ(0)", // Force hardware acceleration
               }}
               animate={{
                 borderRadius: [
@@ -136,6 +155,7 @@ const HeroSection = () => {
                  src={profileImage} 
                  alt="Ketsar Ali" 
                  className="w-full h-full object-cover scale-110 hover:scale-125 transition-transform duration-700"
+                 style={{ willChange: "transform" }}
                />
                
                {/* Shine effect */}
@@ -144,17 +164,6 @@ const HeroSection = () => {
           </div>
         </motion.div>
       </div>
-
-      {/* Scroll Indicator */}
-      <motion.div
-        className="absolute bottom-10 left-1/2 -translate-x-1/2"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <div className="w-6 h-10 rounded-full border-2 border-[var(--text-secondary)] flex justify-center p-1">
-          <div className="w-1 h-2 bg-[var(--text-secondary)] rounded-full" />
-        </div>
-      </motion.div>
     </section>
   );
 };

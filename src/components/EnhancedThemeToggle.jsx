@@ -1,11 +1,23 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaSun, FaMoon, FaDesktop, FaPalette } from "react-icons/fa";
+import { FaSun, FaMoon, FaDesktop, FaCog, FaPalette, FaTimes } from "react-icons/fa";
 import { useTheme } from "../context/EnhancedThemeContext";
 
 const EnhancedThemeToggle = () => {
   const { themeMode, toggleTheme, primaryColor, setPrimaryColor, colors } = useTheme();
-  const [showPalette, setShowPalette] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  // Close when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const icons = {
     light: <FaSun className="text-yellow-500 text-lg" />,
@@ -13,78 +25,74 @@ const EnhancedThemeToggle = () => {
     system: <FaDesktop className="text-blue-500 text-lg" />,
   };
 
-  const labels = {
-    light: "Light",
-    dark: "Dark",
-    system: "Auto",
-  };
-
   return (
-    <div className="fixed top-6 right-6 z-[9990] flex flex-col items-end gap-2">
-      <div className="flex items-center gap-2">
-        {/* Color Palette Button */}
-        <motion.button
-          onClick={() => setShowPalette(!showPalette)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="glass-premium p-3 rounded-full flex items-center justify-center cursor-pointer group hover:bg-[var(--bg-card)] transition-colors duration-300 relative"
-          aria-label="Change Color Theme"
+    <div 
+      ref={containerRef}
+      className="fixed top-1/2 right-0 -translate-y-1/2 z-[9999] flex items-center"
+    >
+      {/* Toggle Button (Always Visible) */}
+      <motion.button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`glass-premium p-3 rounded-l-xl border-r-0 shadow-lg flex items-center justify-center cursor-pointer transition-all duration-300 ${
+          isOpen ? "bg-[var(--bg-card)]" : "bg-[var(--glass-bg)]/80"
+        }`}
+        whileHover={{ x: -2 }}
+        aria-label="Theme Settings"
+      >
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <FaPalette className="text-[var(--primary)] text-lg" />
-          {/* Active Color Indicator */}
-          <div className="absolute top-0 right-0 w-3 h-3 rounded-full border-2 border-[var(--bg-card)]" style={{ backgroundColor: colors[primaryColor].primary }} />
-        </motion.button>
+          {isOpen ? <FaTimes className="text-[var(--primary)]" /> : <FaCog className="text-[var(--text-secondary)]" />}
+        </motion.div>
+      </motion.button>
 
-        {/* Theme Toggle */}
-        <motion.button
-          onClick={toggleTheme}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="glass-premium px-4 py-2 rounded-full flex items-center gap-3 cursor-pointer group hover:bg-[var(--bg-card)] transition-colors duration-300"
-          aria-label={`Switch to ${themeMode === 'light' ? 'dark' : themeMode === 'dark' ? 'system' : 'light'} mode`}
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={themeMode}
-              initial={{ rotate: -180, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 180, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="flex items-center justify-center"
-            >
-              {icons[themeMode]}
-            </motion.div>
-          </AnimatePresence>
-
-          <span className="text-sm font-medium text-[var(--text-primary)] min-w-[3rem] text-left">
-            {labels[themeMode]}
-          </span>
-        </motion.button>
-      </div>
-
-      {/* Color Palette Dropdown */}
+      {/* Expanded Drawer */}
       <AnimatePresence>
-        {showPalette && (
+        {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.9 }}
-            className="glass-premium p-3 rounded-2xl grid grid-cols-5 gap-2"
+            initial={{ x: "100%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "100%", opacity: 0 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="absolute right-full mr-2 glass-premium p-4 rounded-xl flex flex-col gap-4 min-w-[200px]"
           >
-            {Object.keys(colors).map((colorKey) => (
+            {/* Theme Mode Toggle */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Theme</h4>
               <button
-                key={colorKey}
-                onClick={() => {
-                  setPrimaryColor(colorKey);
-                  setShowPalette(false);
-                }}
-                className={`w-8 h-8 rounded-full border-2 transition-transform hover:scale-110 ${
-                  primaryColor === colorKey ? "border-[var(--text-primary)] scale-110" : "border-transparent"
-                }`}
-                style={{ backgroundColor: colors[colorKey].primary }}
-                aria-label={`Select ${colorKey} theme`}
-              />
-            ))}
+                onClick={toggleTheme}
+                className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[var(--bg-main)] transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  {icons[themeMode]}
+                  <span className="text-sm font-medium capitalize">{themeMode}</span>
+                </div>
+                <div className="text-[var(--text-secondary)] text-xs">Tap to switch</div>
+              </button>
+            </div>
+
+            <div className="h-[1px] bg-[var(--glass-border)]" />
+
+            {/* Color Palette */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider flex items-center gap-2">
+                <FaPalette /> Accent Color
+              </h4>
+              <div className="grid grid-cols-5 gap-2">
+                {Object.keys(colors).map((colorKey) => (
+                  <button
+                    key={colorKey}
+                    onClick={() => setPrimaryColor(colorKey)}
+                    className={`w-8 h-8 rounded-full border-2 transition-transform hover:scale-110 ${
+                      primaryColor === colorKey ? "border-[var(--text-primary)] scale-110" : "border-transparent"
+                    }`}
+                    style={{ backgroundColor: colors[colorKey].primary }}
+                    aria-label={`Select ${colorKey} theme`}
+                  />
+                ))}
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

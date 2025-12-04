@@ -59,7 +59,7 @@ const PortfolioSection = () => {
         {/* Search and Filter */}
         <div className="flex flex-col items-center gap-6">
           {/* Search Bar */}
-          <div className="relative w-full max-w-md">
+          <div className="relative w-full max-w-[90vw] md:max-w-md">
             <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]" />
             <input
               type="text"

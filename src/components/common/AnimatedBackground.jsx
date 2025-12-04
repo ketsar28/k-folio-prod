@@ -78,6 +78,7 @@ const AnimatedBackground = () => {
         style={{
           x: useSpring(useMotionValue(0), { stiffness: 50, damping: 20 }),
           y: useSpring(useMotionValue(0), { stiffness: 50, damping: 20 }),
+          willChange: "transform", // Optimize performance
         }}
         animate={{
           scale: [1, 1.2, 1],
@@ -95,6 +96,7 @@ const AnimatedBackground = () => {
         style={{
           x: springX, // Reacts to mouse
           y: springY,
+          willChange: "transform", // Optimize performance
         }}
         animate={{
           scale: [1.2, 1, 1.2],

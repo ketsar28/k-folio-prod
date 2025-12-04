@@ -128,7 +128,7 @@ const MusicPlayer = () => {
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="glass-card p-8 max-w-md w-full text-center space-y-6 border border-[var(--primary)]/30 shadow-[0_0_50px_rgba(var(--primary-rgb),0.2)]"
+              className="glass-card p-6 md:p-8 max-w-md w-[90%] text-center space-y-6 border border-[var(--primary)]/30 shadow-[0_0_50px_rgba(var(--primary-rgb),0.2)]"
             >
               <div className="w-16 h-16 rounded-full bg-[var(--primary)]/20 flex items-center justify-center mx-auto text-[var(--primary)] text-3xl animate-pulse">
                 <FaMusic />

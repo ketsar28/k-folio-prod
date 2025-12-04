@@ -85,7 +85,7 @@ const AboutSection = () => {
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="glass-card p-8"
+            className="glass-card p-6 md:p-8"
           >
             <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
               <FaTools className="text-[var(--primary)]" /> Skills & Technologies

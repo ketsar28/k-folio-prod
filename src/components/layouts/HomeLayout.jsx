@@ -11,7 +11,7 @@ const HomeLayout = () => {
   return (
     <div className="min-h-screen relative z-10">
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-32 pb-32">
+      <main className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 space-y-16 md:space-y-32 pb-32">
         <HeroSection />
         <AboutSection />
         <PortfolioSection />
