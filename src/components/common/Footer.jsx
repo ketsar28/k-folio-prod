@@ -70,7 +70,7 @@ const Footer = () => {
         >
           {/* About Me Column */}
           <motion.div variants={itemVariants} className="space-y-4">
-            <h3 className="text-xl font-bold text-[var(--text-primary)]">Muhammad Ketsar</h3>
+            <h3 className="text-xl font-bold text-[var(--text-primary)]">Ketsar Ali</h3>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
               Data Scientist specializing in Machine Learning and Optimization. Transforming data into
               actionable business strategies and high-impact solutions.
@@ -185,35 +185,37 @@ const Footer = () => {
         >
           {/* Copyright */}
           <p className="text-sm text-[var(--text-secondary)]">
-            © {currentYear} Ketsar Ali (Muhammad Ketsar Ali). All rights reserved.
+            © {currentYear} Ketsar Ali. All rights reserved.
           </p>
 
           {/* Built With */}
-          <div className="flex items-center justify-center gap-2 text-sm text-[var(--text-secondary)]">
-            <span>Built with</span>
-            <FaHeart className="text-red-500 animate-pulse" />
-            <span>using</span>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-sm text-[var(--text-secondary)] mt-4">
             <div className="flex items-center gap-2">
-              <SiReact className="text-[#61DAFB]" title="React.js" />
-              <span>React.js,</span>
-              <SiTailwindcss className="text-[#06B6D4]" title="Tailwind CSS" />
-              <span>Tailwind CSS &</span>
-              <SiVite className="text-[#646CFF]" title="Vite" />
-              <span>Vite</span>
+              <span>Built with</span>
+              <FaHeart className="text-red-500 animate-pulse" />
+              <span>using</span>
+            </div>
+            <div className="flex items-center gap-4 flex-wrap justify-center">
+              <div className="flex items-center gap-1.5 hover:text-[#61DAFB] transition-colors">
+                <SiReact className="text-[#61DAFB]" />
+                <span>React.js</span>
+              </div>
+              <span className="hidden md:inline text-[var(--text-secondary)]/30">•</span>
+              <div className="flex items-center gap-1.5 hover:text-[#06B6D4] transition-colors">
+                <SiTailwindcss className="text-[#06B6D4]" />
+                <span>Tailwind CSS</span>
+              </div>
+              <span className="hidden md:inline text-[var(--text-secondary)]/30">•</span>
+              <div className="flex items-center gap-1.5 hover:text-[#646CFF] transition-colors">
+                <SiVite className="text-[#646CFF]" />
+                <span>Vite</span>
+              </div>
             </div>
           </div>
 
           {/* Additional Info */}
-          <p className="text-xs text-[var(--text-secondary)]">
-            Deployed on{" "}
-            <a
-              href="https://vercel.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[var(--primary)] hover:underline font-medium"
-            >
-              Vercel
-            </a>
+          <p className="text-xs text-[var(--text-secondary)]/60 mt-4">
+            High Performance Deployment
           </p>
         </motion.div>
       </div>

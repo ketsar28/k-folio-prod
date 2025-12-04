@@ -37,7 +37,7 @@ export const socialLinks = [
 ];
 
 export const contactInfo = {
-  email: "muhammadketsar45@gmail.com",
+  email: "muhammadketsar2@gmail.com",
   whatsapp: {
     number: "6285155343380",
     message: encodeURIComponent(

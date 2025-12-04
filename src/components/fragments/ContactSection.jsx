@@ -54,7 +54,7 @@ Terima kasih.
 
     const subject = `[Portfolio Contact] - ${formData.purpose} from ${formData.user_name}`;
     const body = generateMessage();
-    const mailtoUrl = `mailto:muhammadketsar45@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailtoUrl = `mailto:muhammadketsar2@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     
     window.location.href = mailtoUrl;
     toast.success("Membuka Email Client...");
@@ -97,7 +97,7 @@ Terima kasih.
             </a>
 
             <a
-              href="mailto:muhammadketsar45@gmail.com"
+              href="mailto:muhammadketsar2@gmail.com"
               className="flex items-center gap-6 p-6 rounded-2xl glass-premium hover:bg-[var(--bg-card)] transition-all group"
               data-cursor-text="Send Email"
             >
@@ -106,7 +106,7 @@ Terima kasih.
               </div>
               <div>
                 <h4 className="text-xl font-bold">Email</h4>
-                <p className="text-[var(--text-secondary)]">muhammadketsar45@gmail.com</p>
+                <p className="text-[var(--text-secondary)]">muhammadketsar2@gmail.com</p>
               </div>
             </a>
           </div>

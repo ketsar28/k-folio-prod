@@ -3,26 +3,6 @@
 <div align="center">
 
 ![Portfolio Banner](https://img.shields.io/badge/Portfolio-Muhammad%20Ketsar%20Ali-blue?style=for-the-badge)
-![Version](https://img.shields.io/badge/version-2.0.0-green?style=for-the-badge)
-![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge)
-
-**A cutting-edge portfolio website showcasing Data Science, Machine Learning, and Optimization projects**
-
-[🌐 Live Demo](https://k-folio-prod.vercel.app/) • [📧 Email](mailto:muhammadketsar45@gmail.com) • [💼 LinkedIn](https://www.linkedin.com/in/ketsarali/)
-
-</div>
-
----
-
-## 📋 Table of Contents
-
-- [About](#-about)
-- [Features](#-features)
-- [Tech Stack](#️-tech-stack)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [Development](#-development)
 - [Build & Deployment](#️-build--deployment)
 - [Customization](#-customization)
 - [Troubleshooting](#-troubleshooting)
@@ -38,7 +18,7 @@
 
 ### 👨‍💻 About the Developer
 
-**Muhammad Ketsar Ali Abi Wahid**
+**Ketsar Ali**
 - 🎓 **Data Scientist** @ PT. Epam Digital Mandiri
 - 🔬 Specializing in **Machine Learning**, **Deep Learning** & **Optimization Algorithms**
 - 🌍 Based in **Jakarta, Indonesia**
@@ -141,7 +121,7 @@ This portfolio embodies a perfect blend of aesthetics and functionality:
 [![Streamlit](https://img.shields.io/badge/Streamlit-ketsar28-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://share.streamlit.io/user/ketsar28)
 [![WhatsApp](https://img.shields.io/badge/WhatsApp-Chat-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://api.whatsapp.com/send/?phone=6285155343380&text=Hi%20Ketsar!)
 
-**📧 Email:** [muhammadketsar45@gmail.com](mailto:muhammadketsar45@gmail.com)
+**📧 Email:** [muhammadketsar2@gmail.com](mailto:muhammadketsar2@gmail.com)
 
 **🌐 Portfolio:** [https://k-folio-prod.vercel.app/](https://k-folio-prod.vercel.app/)
 
@@ -158,7 +138,7 @@ This project is licensed under the **MIT License**.
 ### MIT License
 
 ```
-Copyright (c) 2025 Muhammad Ketsar Ali Abi Wahid
+Copyright (c) 2025 Ketsar Ali
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -185,9 +165,9 @@ See the [LICENSE](LICENSE) file for full details.
 
 ## © Copyright
 
-**Copyright © 2025 Muhammad Ketsar Ali Abi Wahid. All Rights Reserved.**
+**Copyright © 2025 Ketsar Ali. All Rights Reserved.**
 
-This portfolio website and all its contents, including but not limited to code, design, text, images, and graphics, are the intellectual property of **Muhammad Ketsar Ali Abi Wahid**.
+This portfolio website and all its contents, including but not limited to code, design, text, images, and graphics, are the intellectual property of **Ketsar Ali**.
 
 ### Usage Rights
 
@@ -202,21 +182,21 @@ This portfolio website and all its contents, including but not limited to code, 
 If you use significant portions of this code or design, please provide attribution:
 
 ```
-Based on Ketsar Ali Portfolio by Muhammad Ketsar Ali Abi Wahid
+Based on Ketsar Ali Portfolio by Ketsar Ali
 Repository: https://github.com/ketsar28/k-folio
 ```
 
 ### Contact for Permissions
 
 For commercial use, collaborations, or any questions regarding usage rights, please contact:
-- **Email**: muhammadketsar45@gmail.com
+- **Email**: muhammadketsar2@gmail.com
 - **LinkedIn**: [linkedin.com/in/ketsarali](https://www.linkedin.com/in/ketsarali/)
 
 ---
 
 <div align="center">
 
-**Crafted with ❤️ by [Muhammad Ketsar Ali Abi Wahid](https://github.com/ketsar28/)**
+**Crafted with ❤️ by [Ketsar Ali](https://github.com/ketsar28/)**
 
 **© 2025 Ketsar Ali. All Rights Reserved.**
 

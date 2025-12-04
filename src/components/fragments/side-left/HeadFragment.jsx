@@ -62,7 +62,7 @@ const HeadFragment = () => {
         animate={{ opacity: 1 }}
         className="flex gap-4 pt-4"
       >
-        <a href="mailto:muhammadketsar45@gmail.com" className="btn-primary">
+        <a href="mailto:muhammadketsar2@gmail.com" className="btn-primary">
           Contact Me
         </a>
         <Link
