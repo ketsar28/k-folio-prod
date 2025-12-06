@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+import { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "react-hot-toast";
@@ -9,12 +9,27 @@ import MusicPlayer from "./components/common/MusicPlayer";
 import ScrollProgress from "./components/common/ScrollProgress";
 import BackToTop from "./components/common/BackToTop";
 import AnimatedBackground from "./components/common/AnimatedBackground";
+import Preloader from "./components/common/Preloader";
 import HomePage from "./pages/home/HomePage";
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading time (e.g., 2.5 seconds)
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <HelmetProvider>
       <ThemeProvider>
+        {/* Preloader */}
+        <Preloader isLoading={isLoading} />
+
         {/* Animated Background */}
         <AnimatedBackground />
 
@@ -22,25 +37,27 @@ function App() {
         <CustomCursor />
 
         {/* Scroll Progress Bar */}
-        <ScrollProgress />
+        {!isLoading && <ScrollProgress />}
 
         {/* Theme Toggle */}
         <EnhancedThemeToggle />
 
-        {/* Music Player */}
-        <MusicPlayer />
+        {/* Music Player (Waits for loading to finish) */}
+        <MusicPlayer canShowModal={!isLoading} />
 
         {/* Back to Top Button */}
-        <BackToTop />
+        {!isLoading && <BackToTop />}
 
         {/* Toast Notifications */}
         <Toaster position="bottom-right" />
 
         {/* Routes */}
-        <Routes>
-          <Route exact path={"home"} element={<Navigate to="/" />} />
-          <Route exact path={"/"} element={<HomePage />} />
-        </Routes>
+        {!isLoading && (
+          <Routes>
+            <Route exact path={"home"} element={<Navigate to="/" />} />
+            <Route exact path={"/"} element={<HomePage />} />
+          </Routes>
+        )}
       </ThemeProvider>
     </HelmetProvider>
   );

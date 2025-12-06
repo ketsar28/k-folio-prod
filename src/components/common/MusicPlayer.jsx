@@ -1,34 +1,52 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaMusic, FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaStepForward, FaStepBackward } from "react-icons/fa";
-import tyb from "../../assets/music/tyb.mp3";
+import music1 from "../../assets/music/music-1.mp3";
+import music2 from "../../assets/music/music-2.mp3";
+import music3 from "../../assets/music/music-3.mp3";
+import music4 from "../../assets/music/music 4.mp3";
 
-const MusicPlayer = () => {
+// eslint-disable-next-line react/prop-types
+const MusicPlayer = ({ canShowModal = true }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(0.3);
   const [showControls, setShowControls] = useState(false);
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   
   const audioRef = useRef(null);
 
+  // Show modal only when allowed (after preloader)
+  useEffect(() => {
+    if (canShowModal) {
+      // Small delay to ensure smooth transition
+      const timer = setTimeout(() => setShowModal(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [canShowModal]);
+
   // Playlist Configuration
   const playlist = [
     {
-      title: "Lofi Chill",
-      artist: "K-Folio Vibes",
-      src: tyb,
+      title: "Treat You Better",
+      artist: "Shawn Mendes",
+      src: music1,
     },
     {
-      title: "Coding Focus",
-      artist: "Ambient Flow",
-      src: tyb, // Using same track for demo, user can add more files to assets/music
+      title: "Game Time",
+      artist: "Flo Rida",
+      src: music2,
     },
     {
-      title: "Night Mode",
-      artist: "Deep Synth",
-      src: tyb, // Using same track for demo
+      title: "Adderall & Coffee",
+      artist: "Jakey Krumm",
+      src: music3,
+    },
+    {
+      title: "Constellations",
+      artist: "Keenan Te",
+      src: music4,
     }
   ];
 
@@ -143,18 +161,18 @@ const MusicPlayer = () => {
                 </p>
               </div>
 
-              <div className="flex gap-4 justify-center">
+              <div className="flex gap-2 sm:gap-4 justify-center">
                 <button
                   onClick={handleDeclineMusic}
-                  className="px-6 py-2 rounded-full border border-[var(--text-secondary)] text-[var(--text-secondary)] hover:bg-[var(--text-secondary)]/10 transition-all font-medium"
+                  className="px-4 py-2 sm:px-6 text-xs sm:text-base rounded-full border border-[var(--text-secondary)] text-[var(--text-secondary)] hover:bg-[var(--text-secondary)]/10 transition-all font-medium whitespace-nowrap"
                 >
                   No, thanks
                 </button>
                 <button
                   onClick={handleAcceptMusic}
-                  className="px-6 py-2 rounded-full bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] transition-all font-bold shadow-lg shadow-[var(--primary)]/30 flex items-center gap-2"
+                  className="px-4 py-2 sm:px-6 text-xs sm:text-base rounded-full bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] transition-all font-bold shadow-lg shadow-[var(--primary)]/30 flex items-center gap-2 whitespace-nowrap"
                 >
-                  <FaPlay className="text-sm" /> Yes, Play Music
+                  <FaPlay className="text-xs sm:text-sm" /> Yes, Play Music
                 </button>
               </div>
             </motion.div>

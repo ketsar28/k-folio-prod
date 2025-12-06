@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import { createContext, useContext, useState, useEffect, useMemo } from "react";
 
 const ThemeContext = createContext();
 
-export const ThemeProvider = ({ children }) => {
+// eslint-disable-next-line react/prop-types
+export const EnhancedThemeProvider = ({ children }) => {
   const [themeMode, setThemeMode] = useState(() => {
     const savedMode = localStorage.getItem("themeMode");
     return savedMode || "system"; // "light", "dark", or "system"
@@ -15,13 +15,13 @@ export const ThemeProvider = ({ children }) => {
     return localStorage.getItem("primaryColor") || "indigo";
   });
 
-  const colors = {
+  const colors = useMemo(() => ({
     indigo: { primary: "#4f46e5", hover: "#4338ca", accent: "#8b5cf6" },
     emerald: { primary: "#10b981", hover: "#059669", accent: "#34d399" },
     rose: { primary: "#f43f5e", hover: "#e11d48", accent: "#fb7185" },
     amber: { primary: "#f59e0b", hover: "#d97706", accent: "#fbbf24" },
     cyan: { primary: "#06b6d4", hover: "#0891b2", accent: "#22d3ee" },
-  };
+  }), []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -34,7 +34,7 @@ export const ThemeProvider = ({ children }) => {
     root.style.setProperty("--accent", color.accent);
     
     localStorage.setItem("primaryColor", colorKey);
-  }, [primaryColor]);
+  }, [primaryColor, colors]);
 
   useEffect(() => {
     const applyTheme = () => {
@@ -99,6 +99,7 @@ export const ThemeProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {

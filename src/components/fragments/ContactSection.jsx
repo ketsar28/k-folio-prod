@@ -84,29 +84,29 @@ Terima kasih.
               href="https://api.whatsapp.com/send/?phone=6285155343380&text=Hi%20Ketsar!"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-6 p-6 rounded-2xl glass-premium hover:bg-[var(--bg-card)] transition-all group"
+              className="flex items-center gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl glass-premium hover:bg-[var(--bg-card)] transition-all group"
               data-cursor-text="Chat on WA"
             >
-              <div className="p-4 rounded-full bg-green-500/10 text-green-500 text-2xl group-hover:scale-110 transition-transform">
+              <div className="p-3 sm:p-4 rounded-full bg-green-500/10 text-green-500 text-xl sm:text-2xl group-hover:scale-110 transition-transform">
                 <FaWhatsapp />
               </div>
-              <div>
-                <h4 className="text-xl font-bold">WhatsApp</h4>
-                <p className="text-[var(--text-secondary)]">+62 851-5534-3380</p>
+              <div className="overflow-hidden">
+                <h4 className="text-lg sm:text-xl font-bold">WhatsApp</h4>
+                <p className="text-sm sm:text-base text-[var(--text-secondary)] truncate">+62 851-5534-3380</p>
               </div>
             </a>
 
             <a
               href="mailto:muhammadketsar2@gmail.com"
-              className="flex items-center gap-6 p-6 rounded-2xl glass-premium hover:bg-[var(--bg-card)] transition-all group"
+              className="flex items-center gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl glass-premium hover:bg-[var(--bg-card)] transition-all group"
               data-cursor-text="Send Email"
             >
-              <div className="p-4 rounded-full bg-blue-500/10 text-blue-500 text-2xl group-hover:scale-110 transition-transform">
+              <div className="p-3 sm:p-4 rounded-full bg-blue-500/10 text-blue-500 text-xl sm:text-2xl group-hover:scale-110 transition-transform">
                 <FaEnvelope />
               </div>
-              <div>
-                <h4 className="text-xl font-bold">Email</h4>
-                <p className="text-[var(--text-secondary)]">muhammadketsar2@gmail.com</p>
+              <div className="overflow-hidden">
+                <h4 className="text-lg sm:text-xl font-bold">Email</h4>
+                <p className="text-sm sm:text-base text-[var(--text-secondary)] truncate">muhammadketsar2@gmail.com</p>
               </div>
             </a>
           </div>

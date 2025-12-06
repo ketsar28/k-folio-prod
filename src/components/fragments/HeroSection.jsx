@@ -1,11 +1,14 @@
-import React from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
-import { FaGithub, FaLinkedin, FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaInstagram, FaWhatsapp, FaFileAlt } from "react-icons/fa";
 import { SiHuggingface, SiStreamlit } from "react-icons/si";
 import profileImage from "../../assets/images/me.jpeg";
+import CVModal from "../common/CVModal";
 
 const HeroSection = () => {
+  const [showCV, setShowCV] = useState(false);
+
   const socials = [
     { icon: <FaGithub />, href: "https://github.com/ketsar28/", color: "hover:text-gray-400" },
     { icon: <FaLinkedin />, href: "https://www.linkedin.com/in/ketsarali/", color: "hover:text-blue-500" },
@@ -31,7 +34,7 @@ const HeroSection = () => {
           </div>
           
           <h1 className="text-3xl lg:text-7xl font-bold leading-tight">
-            Hi, I'm <span className="text-gradient">Ketsar Ali</span>
+            Hi, I&apos;m <span className="text-gradient">Ketsar Ali</span>
           </h1>
           
           <div className="text-xl lg:text-3xl font-medium text-[var(--text-secondary)] h-[80px] lg:h-[60px]">
@@ -87,7 +90,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1 }}
           >
-            <div className="flex gap-2 sm:gap-4">
+            <div className="flex flex-wrap justify-center lg:justify-start gap-2 sm:gap-4">
               <a 
                 href="#contact" 
                 className="px-5 py-2 md:px-8 md:py-3 rounded-full bg-[var(--primary)] text-white text-sm md:text-base font-semibold hover:bg-[var(--primary-hover)] transition-all shadow-lg hover:shadow-[var(--primary)]/30 whitespace-nowrap"
@@ -102,6 +105,13 @@ const HeroSection = () => {
               >
                 View Portfolio
               </a>
+              <button 
+                onClick={() => setShowCV(true)}
+                className="px-5 py-2 md:px-8 md:py-3 rounded-full border-2 border-[var(--primary)] text-[var(--primary)] text-sm md:text-base font-semibold hover:bg-[var(--primary)] hover:text-white transition-all whitespace-nowrap flex items-center gap-2"
+                data-cursor-text="My Resume"
+              >
+                <FaFileAlt /> View CV
+              </button>
             </div>
 
             {/* Scroll Indicator (Moved Here) */}
@@ -164,6 +174,9 @@ const HeroSection = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* CV Modal */}
+      <CVModal isOpen={showCV} onClose={() => setShowCV(false)} />
     </section>
   );
 };
