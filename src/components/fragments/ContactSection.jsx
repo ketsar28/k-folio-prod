@@ -76,7 +76,7 @@ Sent from Ketsar Ali Website`;
   };
 
   return (
-    <section id="contact" className="py-20 relative">
+    <section id="contact" className="py-20 relative overflow-hidden">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
         {/* Left: Contact Info */}
         <motion.div

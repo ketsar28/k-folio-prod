@@ -85,30 +85,40 @@ const CVModal = ({ isOpen, onClose }) => {
           initial={{ scale: 0.9, y: 20 }}
           animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0.9, y: 20 }}
-          className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl my-8 scrollbar-hide"
+          className="relative w-full max-w-4xl h-[80vh] flex flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-2xl mb-24"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header Actions */}
-          <div className="absolute top-0 right-0 p-4 flex gap-2 z-50">
-            <button
-              type="button"
-              onClick={generatePdf}
-              disabled={isDownloading}
-              className="p-2 rounded-full bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] transition-colors shadow-lg flex items-center gap-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Download CV as PDF"
-            >
-              <FaDownload /> 
-              <span className="hidden sm:inline">
-                {isDownloading ? "Generating..." : "Download PDF"}
-              </span>
-            </button>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-red-100 hover:text-red-500 transition-colors"
-            >
-              <FaTimes />
-            </button>
+          {/* Modal Toolbar (Sticky Top) */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md rounded-t-2xl z-50">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest pl-2">Resume Preview</h3>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={generatePdf}
+                disabled={isDownloading}
+                className="p-2 rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)] transition-all shadow-md flex items-center gap-2 px-4 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Download CV as PDF"
+              >
+                {isDownloading ? (
+                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <FaDownload />
+                )}
+                <span className="hidden sm:inline">
+                  {isDownloading ? "Generating..." : "Download PDF"}
+                </span>
+              </button>
+              <button
+                onClick={onClose}
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-red-100 hover:text-red-500 transition-colors"
+              >
+                <FaTimes size={20} />
+              </button>
+            </div>
           </div>
+
+          {/* Scrollable Content Area */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar bg-slate-50 dark:bg-slate-900/50 rounded-b-2xl">
 
           {/* Printable Content */}
           <div ref={componentRef} className="p-8 md:p-12 bg-white text-slate-900">
@@ -313,6 +323,7 @@ const CVModal = ({ isOpen, onClose }) => {
             <div className="mt-12 pt-6 border-t border-slate-200 text-center text-xs text-slate-400 hidden print:block">
               <p>© {new Date().getFullYear()} Ketsar Ali. Generated from ketsar-ali.vercel.app</p>
             </div>
+          </div>
           </div>
         </motion.div>
       </motion.div>

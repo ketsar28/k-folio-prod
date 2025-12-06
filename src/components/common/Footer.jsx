@@ -214,9 +214,13 @@ const Footer = () => {
           </div>
 
           {/* Additional Info */}
-          <p className="text-xs text-[var(--text-secondary)]/60 mt-4">
-            High Performance Deployment
-          </p>
+            <div className="flex items-center justify-center gap-2 mt-6 text-xs text-[var(--text-secondary)]/80">
+              <span>Crafted with passion, driven by</span>
+              <span className="bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] bg-clip-text text-transparent font-medium animate-pulse">
+                Data & Creativity
+              </span>
+              <span>✨</span>
+            </div>
         </motion.div>
       </div>
 
