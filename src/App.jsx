@@ -27,37 +27,39 @@ function App() {
   return (
     <HelmetProvider>
       <ThemeProvider>
-        {/* Preloader */}
-        <Preloader isLoading={isLoading} />
+        <div className="min-h-screen w-full overflow-x-hidden relative">
+          {/* Preloader */}
+          <Preloader isLoading={isLoading} />
 
-        {/* Animated Background */}
-        <AnimatedBackground />
+          {/* Animated Background */}
+          <AnimatedBackground />
 
-        {/* Custom Cursor */}
-        <CustomCursor />
+          {/* Custom Cursor */}
+          <CustomCursor />
 
-        {/* Scroll Progress Bar */}
-        {!isLoading && <ScrollProgress />}
+          {/* Scroll Progress Bar */}
+          {!isLoading && <ScrollProgress />}
 
-        {/* Theme Toggle */}
-        <EnhancedThemeToggle />
+          {/* Theme Toggle */}
+          <EnhancedThemeToggle />
 
-        {/* Music Player (Waits for loading to finish) */}
-        <MusicPlayer canShowModal={!isLoading} />
+          {/* Music Player (Waits for loading to finish) */}
+          <MusicPlayer canShowModal={!isLoading} />
 
-        {/* Back to Top Button */}
-        {!isLoading && <BackToTop />}
+          {/* Back to Top Button */}
+          {!isLoading && <BackToTop />}
 
-        {/* Toast Notifications */}
-        <Toaster position="bottom-right" />
+          {/* Toast Notifications */}
+          <Toaster position="bottom-right" />
 
-        {/* Routes */}
-        {!isLoading && (
-          <Routes>
-            <Route exact path={"home"} element={<Navigate to="/" />} />
-            <Route exact path={"/"} element={<HomePage />} />
-          </Routes>
-        )}
+          {/* Routes */}
+          {!isLoading && (
+            <Routes>
+              <Route exact path={"home"} element={<Navigate to="/" />} />
+              <Route exact path={"/"} element={<HomePage />} />
+            </Routes>
+          )}
+        </div>
       </ThemeProvider>
     </HelmetProvider>
   );

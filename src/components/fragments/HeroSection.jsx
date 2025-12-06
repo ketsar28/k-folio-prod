@@ -1,14 +1,12 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import { FaGithub, FaLinkedin, FaInstagram, FaWhatsapp, FaFileAlt } from "react-icons/fa";
 import { SiHuggingface, SiStreamlit } from "react-icons/si";
+import { Link } from "react-scroll";
 import profileImage from "../../assets/images/me.jpeg";
-import CVModal from "../common/CVModal";
 
-const HeroSection = () => {
-  const [showCV, setShowCV] = useState(false);
-
+// eslint-disable-next-line react/prop-types
+const HeroSection = ({ onOpenCV }) => {
   const socials = [
     { icon: <FaGithub />, href: "https://github.com/ketsar28/", color: "hover:text-gray-400" },
     { icon: <FaLinkedin />, href: "https://www.linkedin.com/in/ketsarali/", color: "hover:text-blue-500" },
@@ -19,7 +17,7 @@ const HeroSection = () => {
   ];
 
   return (
-    <section className="min-h-[90vh] flex flex-col justify-center items-center relative pt-20">
+    <section id="home" className="min-h-[90vh] flex flex-col justify-center items-center relative pt-20">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
         {/* Text Content */}
         <motion.div
@@ -91,22 +89,26 @@ const HeroSection = () => {
             transition={{ delay: 1 }}
           >
             <div className="flex flex-wrap justify-center lg:justify-start gap-2 sm:gap-4">
-              <a 
-                href="#contact" 
-                className="px-5 py-2 md:px-8 md:py-3 rounded-full bg-[var(--primary)] text-white text-sm md:text-base font-semibold hover:bg-[var(--primary-hover)] transition-all shadow-lg hover:shadow-[var(--primary)]/30 whitespace-nowrap"
+              <Link 
+                to="contact" 
+                smooth={true}
+                duration={500}
+                className="px-5 py-2 md:px-8 md:py-3 rounded-full bg-[var(--primary)] text-white text-sm md:text-base font-semibold hover:bg-[var(--primary-hover)] transition-all shadow-lg hover:shadow-[var(--primary)]/30 whitespace-nowrap cursor-pointer"
                 data-cursor-text="Let's Talk"
               >
                 Contact Me
-              </a>
-              <a 
-                href="#portfolio" 
-                className="px-5 py-2 md:px-8 md:py-3 rounded-full glass-premium text-[var(--text-primary)] text-sm md:text-base font-semibold hover:bg-[var(--bg-card)] transition-all whitespace-nowrap"
+              </Link>
+              <Link 
+                to="portfolio" 
+                smooth={true}
+                duration={500}
+                className="px-5 py-2 md:px-8 md:py-3 rounded-full glass-premium text-[var(--text-primary)] text-sm md:text-base font-semibold hover:bg-[var(--bg-card)] transition-all whitespace-nowrap cursor-pointer"
                 data-cursor-text="View Work"
               >
                 View Portfolio
-              </a>
+              </Link>
               <button 
-                onClick={() => setShowCV(true)}
+                onClick={onOpenCV}
                 className="px-5 py-2 md:px-8 md:py-3 rounded-full border-2 border-[var(--primary)] text-[var(--primary)] text-sm md:text-base font-semibold hover:bg-[var(--primary)] hover:text-white transition-all whitespace-nowrap flex items-center gap-2"
                 data-cursor-text="My Resume"
               >
@@ -114,7 +116,7 @@ const HeroSection = () => {
               </button>
             </div>
 
-            {/* Scroll Indicator (Moved Here) */}
+            {/* Scroll Indicator */}
             <motion.div
               className="cursor-pointer hover:text-[var(--primary)] transition-colors"
               animate={{ y: [0, 10, 0] }}
@@ -174,9 +176,6 @@ const HeroSection = () => {
           </div>
         </motion.div>
       </div>
-
-      {/* CV Modal */}
-      <CVModal isOpen={showCV} onClose={() => setShowCV(false)} />
     </section>
   );
 };

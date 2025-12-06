@@ -41,7 +41,7 @@ export const contactInfo = {
   whatsapp: {
     number: "6285155343380",
     message: encodeURIComponent(
-      `Hi Ketsar! 👋\n\nSaya [Nama] mendapatkan kontak Anda dari portfolio website Anda.\n\nSaya tertarik untuk [diskusi project/kolaborasi/konsultasi/lainnya] terkait [topik: Data Science/Machine Learning/Web Development/dll].\n\n[Deskripsi singkat kebutuhan]\n\nApakah Anda available untuk discuss lebih lanjut?\n\nTerima kasih!`
+      `Hi Ketsar! 👋\n\nSaya [Nama], mendapatkan kontak Anda dari website Ketsar Ali.\n\nSaya tertarik untuk [diskusi project/kolaborasi/konsultasi/lainnya] terkait [topik: Data Science/Machine Learning/Web Development].\n\n[Deskripsi singkat kebutuhan]\n\nApakah Anda available untuk discuss lebih lanjut?\n\nTerima kasih!`
     ),
   },
   location: "Jakarta, Indonesia",

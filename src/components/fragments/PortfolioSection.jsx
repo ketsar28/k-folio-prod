@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaExternalLinkAlt, FaSearch } from "react-icons/fa";
 import { projectData } from "../../data/side-right/project";
@@ -60,13 +60,13 @@ const PortfolioSection = () => {
         <div className="flex flex-col items-center gap-6">
           {/* Search Bar */}
           <div className="relative w-full max-w-[90vw] md:max-w-md">
-            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]" />
+            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] z-10" />
             <input
               type="text"
               placeholder="Search projects (e.g., Python, QA, API)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-6 py-3 rounded-full glass-premium bg-[var(--bg-main)]/50 border border-[var(--glass-border)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none transition-all placeholder:text-[var(--text-secondary)]/50"
+              className="w-full pl-12 pr-6 py-3 rounded-full glass-premium bg-[var(--bg-main)]/50 border border-[var(--glass-border)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none transition-all placeholder:text-[var(--text-secondary)]/50 text-[var(--text-primary)]"
             />
           </div>
 

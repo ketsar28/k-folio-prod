@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import emailjs from "@emailjs/browser";
 import toast from "react-hot-toast";
 import { FaPaperPlane, FaUser, FaEnvelope, FaCommentAlt } from "react-icons/fa";
@@ -13,11 +13,27 @@ const ContactForm = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const options = [
+    "General Inquiry",
+    "Project Collaboration",
+    "Consultation Request",
+    "Job Opportunity",
+    "Data Science Discussion",
+    "Other",
+  ];
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleSelect = (option) => {
+    setFormData({ ...formData, subject: option });
+    setIsDropdownOpen(false);
   };
 
   const handleSubmit = async (e) => {
@@ -31,6 +47,9 @@ const ContactForm = () => {
       const autoReplyTemplateId = "template_vycdlpq"; // Auto-reply to visitor
       const publicKey = "FXX2RU8htzBtGiKH4";
 
+      // Append branding to message
+      const brandedMessage = `${formData.message}\n\n--\nSent from Ketsar Ali Website`;
+
       // 1. Send email to you (Ketsar)
       await emailjs.send(
         serviceId,
@@ -39,7 +58,7 @@ const ContactForm = () => {
           from_name: formData.name,
           from_email: formData.email,
           subject: formData.subject,
-          message: formData.message,
+          message: brandedMessage,
           to_name: "Ketsar",
         },
         publicKey
@@ -145,26 +164,50 @@ const ContactForm = () => {
         />
       </div>
 
-      {/* Subject Field */}
-      <div className="space-y-2">
-        <label htmlFor="subject" className="flex items-center gap-2 text-[var(--text-primary)] font-medium">
+      {/* Purpose Field (Custom Dropdown) */}
+      <div className="space-y-2 relative z-50">
+        <label className="flex items-center gap-2 text-[var(--text-primary)] font-medium">
           <FaCommentAlt className="text-[var(--primary)]" />
-          Subject
+          Purpose
         </label>
-        <select
-          id="subject"
-          name="subject"
-          value={formData.subject}
-          onChange={handleChange}
-          className="w-full px-4 py-3 bg-[var(--bg-dark)] border border-[var(--primary)]/20 rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all"
-        >
-          <option>General Inquiry</option>
-          <option>Project Collaboration</option>
-          <option>Consultation Request</option>
-          <option>Job Opportunity</option>
-          <option>Data Science Discussion</option>
-          <option>Other</option>
-        </select>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
+            className="w-full px-4 py-3 bg-[var(--bg-dark)] border border-[var(--primary)]/20 rounded-lg text-[var(--text-primary)] flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all text-left"
+          >
+            {formData.subject}
+            <motion.span
+              animate={{ rotate: isDropdownOpen ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              ▼
+            </motion.span>
+          </button>
+          
+          <AnimatePresence>
+            {isDropdownOpen && (
+              <motion.ul
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute w-full mt-2 bg-[var(--bg-card)] border border-[var(--primary)]/20 rounded-xl shadow-xl overflow-hidden z-50 max-h-60 overflow-y-auto custom-scrollbar"
+              >
+                {options.map((option) => (
+                  <li
+                    key={option}
+                    onClick={() => handleSelect(option)}
+                    className="px-4 py-3 text-[var(--text-primary)] hover:bg-[var(--primary)] hover:text-white cursor-pointer transition-colors"
+                  >
+                    {option}
+                  </li>
+                ))}
+              </motion.ul>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Message Field */}

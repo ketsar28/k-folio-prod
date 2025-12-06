@@ -28,12 +28,12 @@ const EnhancedThemeToggle = () => {
   return (
     <div 
       ref={containerRef}
-      className="fixed top-1/2 right-0 -translate-y-1/2 z-[9999] flex items-center"
+      className="fixed top-1/2 right-0 md:right-0 -translate-y-1/2 z-[9999] flex items-center pr-0"
     >
       {/* Toggle Button (Always Visible) */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className={`glass-premium p-3 rounded-l-xl border-r-0 shadow-lg flex items-center justify-center cursor-pointer transition-all duration-300 ${
+        className={`glass-premium p-3 rounded-l-xl md:rounded-l-xl rounded-r-none border-r-0 shadow-lg flex items-center justify-center cursor-pointer transition-all duration-300 ${
           isOpen ? "bg-[var(--bg-card)]" : "bg-[var(--glass-bg)]/80"
         }`}
         whileHover={{ x: -2 }}

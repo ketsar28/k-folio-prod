@@ -140,12 +140,12 @@ const CustomCursor = () => {
       opacity: isMobile ? (isTouching ? 1 : 0) : 1,
     },
     hover: {
-      x: mousePosition.x - 32,
-      y: mousePosition.y - 32,
-      height: 64,
-      width: 64,
-      backgroundColor: "var(--accent)",
-      mixBlendMode: "difference",
+      x: mousePosition.x - 8,
+      y: mousePosition.y - 8,
+      height: 16,
+      width: 16,
+      backgroundColor: "var(--primary)",
+      mixBlendMode: "normal",
       opacity: isMobile ? (isTouching ? 1 : 0) : 1,
     },
     clicking: {
@@ -162,7 +162,7 @@ const CustomCursor = () => {
   return (
     <>
       <motion.div
-        className="fixed top-0 left-0 z-[9999] pointer-events-none rounded-full flex items-center justify-center backdrop-blur-sm"
+        className="fixed top-0 left-0 z-[10000] pointer-events-none rounded-full flex items-center justify-center backdrop-blur-sm"
         variants={variants}
         animate={isClicking ? "clicking" : isHovering ? "hover" : "default"}
         transition={{
@@ -188,7 +188,7 @@ const CustomCursor = () => {
       
       {/* Trailing dot (Main Cursor) */}
       <motion.div 
-        className="fixed top-0 left-0 z-[9998] pointer-events-none w-2 h-2 bg-[var(--accent)] rounded-full"
+        className="fixed top-0 left-0 z-[9999] pointer-events-none w-2 h-2 bg-[var(--accent)] rounded-full"
         animate={{
           x: mousePosition.x - 4,
           y: mousePosition.y - 4,
@@ -212,7 +212,7 @@ const CustomCursor = () => {
               animate={{ opacity: 0, scale: 0, y: particle.y - 20 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="fixed top-0 left-0 z-[9997] pointer-events-none rounded-full"
+              className="fixed top-0 left-0 z-[9998] pointer-events-none rounded-full"
               style={{
                 width: particle.size,
                 height: particle.size,
