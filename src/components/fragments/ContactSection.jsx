@@ -134,7 +134,7 @@ Sent from Ketsar Ali Website`;
           viewport={{ once: true }}
           className="relative"
         >
-          <div className="glass-card p-8 relative z-10">
+          <div className="glass-card p-8 relative">
             <h3 className="text-2xl font-bold mb-6">Send a Message</h3>
             <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
               <div className="space-y-2">
