@@ -1,0 +1,28 @@
+/* Hide default cursor - only on desktop */
+@media (hover: hover) and (pointer: fine) {
+  body,
+  body * {
+    cursor: none !important;
+  }
+}
+
+/* Custom cursor styles - ALWAYS ON TOP */
+.custom-cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99999; /* Very high z-index to be above everything */
+  will-change: transform, width, height, background-color;
+  transform: translate3d(0, 0, 0); /* Hardware acceleration */
+}
+
+/* Mobile devices - show default cursor */
+@media (hover: none) and (pointer: coarse) {
+  body,
+  body * {
+    cursor: auto !important;
+  }
+
+  .custom-cursor {
+    display: none !important;
+  }
+}
