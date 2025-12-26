@@ -568,7 +568,7 @@ const Resolutions = () => {
                       </div>
 
                       {/* Actions */}
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="flex items-center gap-1 shrink-0 opacity-60 group-hover:opacity-100 transition-opacity">
                         {(res.description || res.milestones) && (
                           <button
                             onClick={() => setExpandedId(expandedId === res.id ? null : res.id)}
@@ -579,13 +579,13 @@ const Resolutions = () => {
                         )}
                         <button
                           onClick={() => startEdit(res)}
-                          className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--bg-main)] transition-all opacity-0 group-hover:opacity-100"
+                          className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all"
                         >
                           <HugeiconsIcon icon={Edit02Icon} size={16} />
                         </button>
                         <button
                           onClick={() => deleteResolution(res.id)}
-                          className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
+                          className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-red-400 hover:bg-red-500/10 transition-all"
                         >
                           <HugeiconsIcon icon={Delete02Icon} size={16} />
                         </button>

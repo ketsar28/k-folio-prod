@@ -295,14 +295,25 @@ const ReadingList = () => {
               </div>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            {/* Submit Buttons - Consistent with Tasks */}
+            <div className="flex gap-2 pt-2">
               <button
-                type="submit"
-                className="flex-1 py-4 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] hover:opacity-90 text-white rounded-2xl font-bold transition-all flex justify-center items-center gap-2 shadow-lg shadow-[var(--primary)]/25"
+                type="button"
+                onClick={resetForm}
+                className="flex-1 py-3 rounded-xl bg-slate-700 text-[var(--text-secondary)] font-medium text-sm hover:bg-slate-600 transition-all"
               >
-                <HugeiconsIcon icon={editingId ? Tick02Icon : Add01Icon} size={22} />
-                {editingId ? "Simpan Perubahan" : "Tambahkan ke Koleksi"}
+                Batal
               </button>
+              <motion.button
+                type="submit"
+                disabled={!formData.title.trim()}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-sm"
+              >
+                <HugeiconsIcon icon={editingId ? Tick02Icon : Add01Icon} size={18} />
+                <span>{editingId ? "Update" : "Tambah"}</span>
+              </motion.button>
             </div>
           </motion.form>
         ) : (
@@ -333,10 +344,10 @@ const ReadingList = () => {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="p-5 bg-[var(--bg-card)]/40 backdrop-blur-sm border border-[var(--glass-border)] rounded-2xl group hover:border-[var(--primary)]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[var(--primary)]/5 flex flex-col h-full"
               >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-start gap-4">
+                <div className="flex justify-between items-start mb-4 gap-2">
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
                     <div 
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500"
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500"
                       style={{ 
                         background: `linear-gradient(135deg, ${getSourceConfig(book.source).color}15, ${getSourceConfig(book.source).color}05)`,
                         border: `1px solid ${getSourceConfig(book.source).color}25`
@@ -344,21 +355,28 @@ const ReadingList = () => {
                     >
                       <HugeiconsIcon 
                         icon={SourceIcon} 
-                        size={24} 
+                        size={20} 
                         style={{ color: getSourceConfig(book.source).color }} 
                       />
                     </div>
-                    <div className="overflow-hidden">
-                      <h4 className="font-bold text-white text-base leading-tight mb-1 truncate group-hover:text-[var(--primary)] transition-colors">{book.title}</h4>
-                      <p className="text-sm text-[var(--text-secondary)] truncate">{book.author}</p>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="font-bold text-white text-sm sm:text-base leading-tight mb-1 line-clamp-2 group-hover:text-[var(--primary)] transition-colors">{book.title}</h4>
+                      <p className="text-xs sm:text-sm text-[var(--text-secondary)] truncate">{book.author || "Penulis tidak diketahui"}</p>
                     </div>
                   </div>
                   
-                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => startEdit(book)} className="text-gray-400 hover:text-[var(--primary)]">
+                  {/* Action buttons - always visible with subtle opacity */}
+                  <div className="flex gap-1 shrink-0 opacity-60 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); startEdit(book); }} 
+                      className="p-1.5 sm:p-2 rounded-lg text-gray-400 hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all"
+                    >
                       <HugeiconsIcon icon={Edit02Icon} size={16} />
                     </button>
-                    <button onClick={() => deleteBook(book.id)} className="text-gray-400 hover:text-red-500">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); deleteBook(book.id); }} 
+                      className="p-1.5 sm:p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                    >
                       <HugeiconsIcon icon={Delete02Icon} size={16} />
                     </button>
                   </div>

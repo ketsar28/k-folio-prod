@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
@@ -6,23 +6,42 @@ import TodoApp from "../components/dashboard/TodoApp";
 import Resolutions from "../components/dashboard/Resolutions";
 import FocusTimer from "../components/dashboard/FocusTimer";
 import ReadingList from "../components/dashboard/ReadingList";
+import FinanceTracker from "../components/dashboard/FinanceTracker";
+import ProjectBoard from "../components/dashboard/ProjectBoard";
+import UnifiedCalendar from "../components/dashboard/UnifiedCalendar";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Task01Icon,
   Target01Icon,
   Clock01Icon,
   BookOpen01Icon,
+  MoneyBag02Icon,
+  KanbanIcon,
+  Calendar03Icon,
 } from "@hugeicons/core-free-icons";
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("tasks");
+  
+  // Initialize activeTab from localStorage, fallback to "tasks"
+  const [activeTab, setActiveTab] = useState(() => {
+    const saved = localStorage.getItem("dashboardActiveTab");
+    return saved || "tasks";
+  });
+
+  // Save activeTab to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("dashboardActiveTab", activeTab);
+  }, [activeTab]);
 
   const tabs = [
     { id: "tasks", label: "Tasks", icon: Task01Icon },
     { id: "resolutions", label: "Resolutions", icon: Target01Icon },
     { id: "focus", label: "Focus", icon: Clock01Icon },
     { id: "library", label: "Library", icon: BookOpen01Icon },
+    { id: "projects", label: "Projects", icon: KanbanIcon },
+    { id: "calendar", label: "Calendar", icon: Calendar03Icon },
+    { id: "finance", label: "Finance", icon: MoneyBag02Icon },
   ];
 
   return (
@@ -88,6 +107,9 @@ const Dashboard = () => {
               {activeTab === "resolutions" && <Resolutions />}
               {activeTab === "focus" && <FocusTimer />}
               {activeTab === "library" && <ReadingList />}
+              {activeTab === "finance" && <FinanceTracker />}
+              {activeTab === "projects" && <ProjectBoard />}
+              {activeTab === "calendar" && <UnifiedCalendar />}
             </motion.div>
           </AnimatePresence>
         </div>

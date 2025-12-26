@@ -65,14 +65,15 @@ const Navbar = () => {
               </Link>
             </li>
           ))}
-          {/* Dashboard Access Button - Hidden untuk owner */}
+          {/* Premium Owner Access - Desktop */}
           <li>
             <button
               onClick={() => navigate("/login")}
-              className="ml-2 p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all"
-              title="Dashboard"
+              className="group ml-2 px-4 py-2 rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white font-semibold text-sm flex items-center gap-2 shadow-lg shadow-[var(--primary)]/25 hover:shadow-xl hover:shadow-[var(--primary)]/40 transition-all duration-300"
+              title="Owner Access"
             >
-              <HugeiconsIcon icon={SparklesIcon} size={18} />
+              <HugeiconsIcon icon={SparklesIcon} size={16} className="group-hover:animate-pulse" />
+              <span className="hidden lg:inline">Owner</span>
             </button>
           </li>
         </ul>
@@ -118,21 +119,33 @@ const Navbar = () => {
               </motion.div>
             ))}
 
-            {/* Mobile Dashboard Link */}
+            {/* Premium Owner Access Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
+              className="mt-4"
             >
               <button
                 onClick={() => {
                   navigate("/login");
                   setIsMobileMenuOpen(false);
                 }}
-                className="text-3xl font-bold text-[var(--text-primary)] hover:text-[var(--primary)] transition-colors cursor-pointer flex items-center gap-2"
+                className="group relative px-8 py-4 bg-gradient-to-r from-[var(--primary)] via-[var(--secondary)] to-[var(--accent)] rounded-2xl overflow-hidden shadow-2xl shadow-[var(--primary)]/30 cursor-pointer"
               >
-                <HugeiconsIcon icon={SparklesIcon} size={28} />
-                Dashboard
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                
+                {/* Content */}
+                <div className="relative flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <HugeiconsIcon icon={SparklesIcon} size={22} className="text-white animate-pulse" />
+                  </div>
+                  <div className="text-left">
+                    <span className="block text-white font-bold text-lg">Owner Access</span>
+                    <span className="block text-white/70 text-xs font-medium">Private Workspace</span>
+                  </div>
+                </div>
               </button>
             </motion.div>
             

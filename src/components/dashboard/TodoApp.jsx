@@ -37,6 +37,7 @@ const TodoApp = () => {
   const { user } = useAuth();
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState("");
+  const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("medium");
   const [loading, setLoading] = useState(true);
@@ -44,6 +45,7 @@ const TodoApp = () => {
   const [sortBy, setSortBy] = useState("date");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
 
   // Subscribe to todos collection
   useEffect(() => {
@@ -66,6 +68,7 @@ const TodoApp = () => {
 
   const resetForm = () => {
     setNewTodo("");
+    setDescription("");
     setDueDate("");
     setPriority("medium");
     setShowForm(false);
@@ -82,6 +85,7 @@ const TodoApp = () => {
         const todoRef = doc(db, "users", user.uid, "todos", editingId);
         await updateDoc(todoRef, {
           text: newTodo.trim(),
+          description: description.trim(),
           priority: priority,
           dueDate: dueDate || null,
           updatedAt: serverTimestamp(),
@@ -91,6 +95,7 @@ const TodoApp = () => {
         const todosRef = collection(db, "users", user.uid, "todos");
         await addDoc(todosRef, {
           text: newTodo.trim(),
+          description: description.trim(),
           completed: false,
           priority: priority,
           dueDate: dueDate || null,
@@ -105,10 +110,29 @@ const TodoApp = () => {
 
   const startEdit = (todo) => {
     setNewTodo(todo.text);
+    setDescription(todo.description || "");
     setDueDate(todo.dueDate || "");
     setPriority(todo.priority || "medium");
     setEditingId(todo.id);
     setShowForm(true);
+  };
+
+  // Reschedule overdue task to tomorrow
+  const rescheduleToTomorrow = async (todoId) => {
+    if (!user) return;
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split("T")[0];
+    
+    try {
+      const todoRef = doc(db, "users", user.uid, "todos", todoId);
+      await updateDoc(todoRef, {
+        dueDate: tomorrowStr,
+        updatedAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error("Error rescheduling:", error);
+    }
   };
 
   const toggleTodo = async (todo) => {
@@ -276,6 +300,15 @@ const TodoApp = () => {
               className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-[var(--primary)] outline-none transition-all text-white placeholder:text-slate-400 text-sm"
             />
 
+            {/* Description */}
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Deskripsi tugas (opsional)..."
+              rows={3}
+              className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 focus:border-[var(--primary)] outline-none transition-all text-white placeholder:text-slate-400 text-sm resize-none"
+            />
+
             {/* Due Date & Priority Row */}
             <div className="grid grid-cols-2 gap-3">
               {/* Due Date */}
@@ -432,7 +465,10 @@ const TodoApp = () => {
                 </button>
 
                 {/* Content */}
-                <div className="flex-1 min-w-0">
+                <div 
+                  className="flex-1 min-w-0 cursor-pointer"
+                  onClick={() => setExpandedId(expandedId === todo.id ? null : todo.id)}
+                >
                   <span
                     className={`block text-sm transition-all ${
                       todo.completed
@@ -442,6 +478,13 @@ const TodoApp = () => {
                   >
                     {todo.text}
                   </span>
+                  
+                  {/* Description Preview */}
+                  {todo.description && expandedId !== todo.id && (
+                    <p className="text-xs text-[var(--text-secondary)] mt-1 line-clamp-1 opacity-70">
+                      {todo.description}
+                    </p>
+                  )}
                   
                   {/* Meta Info */}
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
@@ -455,26 +498,60 @@ const TodoApp = () => {
                       <HugeiconsIcon icon={Flag02Icon} size={12} style={{ color: getPriorityColor(todo.priority) }} />
                       {PRIORITIES.find(p => p.id === todo.priority)?.label}
                     </span>
+                    {todo.description && (
+                      <span className="text-xs text-[var(--primary)]">
+                        {expandedId === todo.id ? "▲ Tutup" : "▼ Detail"}
+                      </span>
+                    )}
                   </div>
+                  
+                  {/* Expanded Description */}
+                  <AnimatePresence>
+                    {expandedId === todo.id && todo.description && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mt-3 pt-3 border-t border-[var(--glass-border)]"
+                      >
+                        <p className="text-sm text-[var(--text-secondary)] whitespace-pre-wrap">
+                          {todo.description}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-1 shrink-0">
-                  {/* Edit Button */}
-                  <button
-                    onClick={() => startEdit(todo)}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 sm:p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--bg-main)] transition-all"
-                  >
-                    <HugeiconsIcon icon={Edit02Icon} size={16} />
-                  </button>
+                <div className="flex flex-col items-center gap-1 shrink-0">
+                  {/* Reschedule Button for Overdue */}
+                  {isOverdue(todo) && (
+                    <button
+                      onClick={() => rescheduleToTomorrow(todo.id)}
+                      className="px-2 py-1 rounded-lg text-xs bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 transition-all whitespace-nowrap"
+                      title="Jadwalkan ke besok"
+                    >
+                      → Besok
+                    </button>
+                  )}
                   
-                  {/* Delete Button */}
-                  <button
-                    onClick={() => deleteTodo(todo.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 sm:p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-all"
-                  >
-                    <HugeiconsIcon icon={Delete02Icon} size={16} />
-                  </button>
+                  <div className="flex items-center gap-1 opacity-60 sm:opacity-60 group-hover:opacity-100 transition-opacity">
+                    {/* Edit Button */}
+                    <button
+                      onClick={() => startEdit(todo)}
+                      className="p-1.5 sm:p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all"
+                    >
+                      <HugeiconsIcon icon={Edit02Icon} size={16} />
+                    </button>
+                    
+                    {/* Delete Button */}
+                    <button
+                      onClick={() => deleteTodo(todo.id)}
+                      className="p-1.5 sm:p-2 rounded-lg text-[var(--text-secondary)] hover:text-red-400 hover:bg-red-500/10 transition-all"
+                    >
+                      <HugeiconsIcon icon={Delete02Icon} size={16} />
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))
