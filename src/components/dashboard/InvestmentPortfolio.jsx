@@ -10,14 +10,14 @@ import {
   AnalysisTextLinkIcon,
   Task01Icon,
   Analytics01Icon,
-  Target01Icon,
   StarIcon,
   Add01Icon,
   Edit02Icon,
   Delete02Icon,
   ChartHistogramIcon,
   Cancel01Icon,
-  FilterHorizontalIcon
+  FilterHorizontalIcon,
+  InformationCircleIcon
 } from "@hugeicons/core-free-icons";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 
@@ -25,9 +25,37 @@ const ASSET_TYPES = [
   { id: "crypto", label: "Crypto", icon: MoneyBag02Icon, color: "#f7931a" },
   { id: "stock", label: "Saham", icon: Analytics01Icon, color: "#3b82f6" },
   { id: "gold", label: "Emas", icon: StarIcon, color: "#eab308" },
-  { id: "mutual_fund", label: "Reksadana", icon: Target01Icon, color: "#10b981" },
   { id: "other", label: "Lainnya", icon: MoneyBag02Icon, color: "#8b5cf6" },
 ];
+
+const getAssetFormConfig = (type) => {
+  switch (type) {
+    case "crypto": return {
+       tickerLabel: "Ticker / Symbol", tickerPlaceholder: "BTC, ETH, SOL",
+       nameLabel: "Nama Aset", namePlaceholder: "Bitcoin, Ethereum",
+       amountLabel: "Jumlah Koin (Coin)", amountPlaceholder: "0.00000000",
+       amountTooltip: "Jumlah unit koin yang Anda miliki. Gunakan koma untuk desimal."
+    };
+    case "stock": return {
+       tickerLabel: "Kode Emiten", tickerPlaceholder: "BBCA, TLKM, GOTO",
+       nameLabel: "Nama Perusahaan", namePlaceholder: "Bank Central Asia, Telkom",
+       amountLabel: "Jumlah Lembar", amountPlaceholder: "0",
+       amountTooltip: "Total lembar saham yang dimiliki (1 Lot = 100 Lembar)."
+    };
+    case "gold": return {
+       tickerLabel: "Kode / Seri (Opsional)", tickerPlaceholder: "ANTAM, UBS",
+       nameLabel: "Jenis Emas", namePlaceholder: "Emas Antam 24K, Emas Digital",
+       amountLabel: "Berat (Gram)", amountPlaceholder: "0.00",
+       amountTooltip: "Berat emas dalam satuan gram. Gunakan koma untuk desimal."
+    };
+    default: return {
+       tickerLabel: "Kode / Ticker", tickerPlaceholder: "CODE",
+       nameLabel: "Nama Aset", namePlaceholder: "Nama Aset",
+       amountLabel: "Jumlah Unit", amountPlaceholder: "0",
+       amountTooltip: "Jumlah unit aset yang dimiliki."
+    };
+  }
+};
 
 const PLATFORMS = ["Binance", "Indodax", "Tokocrypto", "Pintu", "Ajaib", "Bibit", "Stockbit", "Bareksa", "Pluang", "GoTrade", "OKX", "Wallet (Cold)", "Other"];
 
@@ -161,6 +189,18 @@ const FormattedInput = ({ value, onChange, placeholder, className, prefix, curre
     </div>
   );
 };
+
+
+
+const HelperTooltip = ({ text }) => (
+  <div className="relative group inline-block ml-1 align-middle">
+    <HugeiconsIcon icon={InformationCircleIcon} size={14} className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors cursor-help" />
+    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-black/90 text-white text-[10px] rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-center border border-[var(--glass-border)] invisible group-hover:visible">
+      {text}
+      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black/90 rotate-45 border-r border-b border-[var(--glass-border)]"></div>
+    </div>
+  </div>
+);
 
 const InvestmentPortfolio = () => {
   const { user } = useAuth();
@@ -641,6 +681,8 @@ const InvestmentPortfolio = () => {
   }).filter(d => d !== null && d.value > 0);
 
   // Reused Modal Content
+  const formConfig = getAssetFormConfig(formData.type);
+
   const ModalContent = (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -656,7 +698,7 @@ const InvestmentPortfolio = () => {
         {/* Type Selection */}
         <div>
           <label className="text-xs text-[var(--text-secondary)] mb-2 block font-medium uppercase tracking-wide">Tipe Aset</label>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-3 gap-3">
             {ASSET_TYPES.filter(t => t.id !== 'other').map((type) => (
               <button
                 key={type.id}
@@ -692,30 +734,30 @@ const InvestmentPortfolio = () => {
         </div>
 
         <div>
-           <label className="text-xs text-[var(--text-secondary)] mb-1 block">Nama Aset</label>
+           <label className="text-xs text-[var(--text-secondary)] mb-1 block">{formConfig.nameLabel}</label>
            <input
              required
              value={formData.name}
              onChange={(e) => setFormData({...formData, name: e.target.value})}
-             placeholder="Contoh: Bitcoin, BCA, Emas Antam"
+             placeholder={formConfig.namePlaceholder}
              className="w-full px-4 py-3 rounded-xl bg-[var(--bg-main)] border border-[var(--glass-border)] text-white focus:border-[var(--primary)] outline-none"
            />
         </div>
 
         <div>
-           <label className="text-xs text-[var(--text-secondary)] mb-1 block">Ticker / Kode</label>
+           <label className="text-xs text-[var(--text-secondary)] mb-1 block">{formConfig.tickerLabel}</label>
            <input
-             required
+             required={formData.type !== 'gold'}
              value={formData.ticker}
              onChange={(e) => setFormData({...formData, ticker: e.target.value.toUpperCase()})}
-             placeholder="BTC, BBCA, GOLD"
+             placeholder={formConfig.tickerPlaceholder}
              className="w-full px-4 py-3 rounded-xl bg-[var(--bg-main)] border border-[var(--glass-border)] text-white focus:border-[var(--primary)] outline-none uppercase font-mono"
            />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
            <div>
-             <label className="text-xs text-[var(--text-secondary)] mb-1 block">Harga Beli Rata2 {inputCurrency === 'USD' ? '($)' : '(Rp)'} <span className="opacity-50 font-normal ml-0.5">(Gunakan , desimal)</span></label>
+             <label className="text-xs text-[var(--text-secondary)] mb-1 block">Harga Beli (Average) {inputCurrency === 'USD' ? '($)' : '(Rp)'} <HelperTooltip text="Harga rata-rata pembelian per unit aset. Gunakan angka & koma." /></label>
              <FormattedInput
                 value={formData.avgBuyPrice}
                 onChange={(val) => handleInputChange("avgBuyPrice", val)}
@@ -726,7 +768,7 @@ const InvestmentPortfolio = () => {
              />
            </div>
            <div>
-             <label className="text-xs text-[var(--text-secondary)] mb-1 block">Harga Sekarang {inputCurrency === 'USD' ? '($)' : '(Rp)'} <span className="opacity-50 font-normal ml-0.5">(Gunakan , desimal)</span></label>
+             <label className="text-xs text-[var(--text-secondary)] mb-1 block">Harga Sekarang {inputCurrency === 'USD' ? '($)' : '(Rp)'} <HelperTooltip text="Harga pasar terkini per unit aset. Data ini untuk estimasi profit." /></label>
              <FormattedInput
                 value={formData.currentPrice}
                 onChange={(val) => handleInputChange("currentPrice", val)}
@@ -739,11 +781,11 @@ const InvestmentPortfolio = () => {
         </div>
 
         <div>
-           <label className="text-xs text-[var(--text-secondary)] mb-1 block">Jumlah Aset (Qty) <span className="opacity-50 font-normal ml-0.5">(Gunakan , desimal)</span></label>
+           <label className="text-xs text-[var(--text-secondary)] mb-1 block">{formConfig.amountLabel} <HelperTooltip text={formConfig.amountTooltip} /></label>
            <FormattedInput
               value={formData.amount}
               onChange={(val) => handleInputChange("amount", val)}
-              placeholder="Lembar / Koin / Gram"
+              placeholder={formConfig.amountPlaceholder}
               className="w-full py-3 rounded-xl bg-[var(--bg-main)] border border-[var(--glass-border)] text-white focus:border-[var(--primary)] outline-none"
            />
         </div>
@@ -961,11 +1003,11 @@ const InvestmentPortfolio = () => {
                  exit={{ height: 0, opacity: 0 }}
                  className="overflow-hidden"
                >
-                 <div className="mt-2 text-xs flex items-center gap-3 bg-[var(--bg-card)] p-2 rounded-lg border border-[var(--glass-border)] w-fit">
-                    <span className="text-[var(--text-secondary)]">Input Mode:</span>
-                    <div className="flex bg-black/30 rounded-lg p-0.5">
-                       <button onClick={() => setInputCurrency('IDR')} className={`px-2 py-1 rounded-md transition-all ${inputCurrency === 'IDR' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)]'}`}>IDR</button>
-                       <button onClick={() => setInputCurrency('USD')} className={`px-2 py-1 rounded-md transition-all ${inputCurrency === 'USD' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)]'}`}>USD</button>
+                 <div className="mt-2 text-sm flex items-center gap-3 bg-[var(--bg-card)] p-3 rounded-xl border border-[var(--glass-border)] w-fit shadow-sm">
+                    <span className="text-[var(--text-secondary)] font-medium">Input Mode:</span>
+                    <div className="flex bg-black/30 rounded-lg p-1">
+                       <button onClick={() => setInputCurrency('IDR')} className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${inputCurrency === 'IDR' ? 'bg-[var(--primary)] text-white shadow-sm' : 'text-[var(--text-secondary)] hover:text-white'}`}>IDR</button>
+                       <button onClick={() => setInputCurrency('USD')} className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${inputCurrency === 'USD' ? 'bg-[var(--primary)] text-white shadow-sm' : 'text-[var(--text-secondary)] hover:text-white'}`}>USD</button>
                     </div>
                     {inputCurrency === 'USD' && (
                        <div className="flex items-center gap-2 border-l border-white/10 pl-3">
@@ -974,10 +1016,9 @@ const InvestmentPortfolio = () => {
                              type="number" 
                              value={exchangeRate} 
                              onChange={(e) => setExchangeRate(Number(e.target.value))}
-                             className="w-20 bg-transparent border-b border-white/20 text-white outline-none text-right" 
+                             className="w-24 bg-transparent border-b border-white/20 text-white outline-none text-right font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
                           />
                        </div>
-
                     )}
                  </div>
                </motion.div>
@@ -1265,7 +1306,7 @@ const InvestmentPortfolio = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs text-[var(--text-secondary)] mb-1 block">Harga Beli (Buy Price) <span className="opacity-50 font-normal ml-0.5">(Gunakan , desimal)</span></label>
+                    <label className="text-xs text-[var(--text-secondary)] mb-1 block">Harga Beli (Buy Price) <HelperTooltip text="Harga pembelian awal per unit untuk simulasi." /></label>
                     <FormattedInput
                        value={calcData.buyPrice}
                        onChange={(val) => handleCalcChange("buyPrice", val)}
@@ -1276,7 +1317,7 @@ const InvestmentPortfolio = () => {
                   </div>
                   
                   <div>
-                    <label className="text-xs text-[var(--text-secondary)] mb-1 block">Jumlah Aset (Amount) <span className="opacity-50 font-normal ml-0.5">(Gunakan , desimal)</span></label>
+                    <label className="text-xs text-[var(--text-secondary)] mb-1 block">Jumlah Aset (Amount) <HelperTooltip text="Jumlah unit yang ingin disimulasikan." /></label>
                     <FormattedInput
                        value={calcData.amount}
                        onChange={(val) => handleCalcChange("amount", val)}
@@ -1286,7 +1327,7 @@ const InvestmentPortfolio = () => {
                   </div>
 
                   <div>
-                    <label className="text-xs text-[var(--text-secondary)] mb-1 block">Target Harga Jual (Sell Price) <span className="opacity-50 font-normal ml-0.5">(Gunakan , desimal)</span></label>
+                    <label className="text-xs text-[var(--text-secondary)] mb-1 block">Target Harga Jual (Sell Price) <HelperTooltip text="Target harga jual per unit untuk melihat potensi profit." /></label>
                     <FormattedInput
                        value={calcData.targetPrice}
                        onChange={(val) => handleCalcChange("targetPrice", val)}
@@ -1384,7 +1425,7 @@ const InvestmentPortfolio = () => {
                      </div>
                   </div>
                    <div>
-                      <label className="text-xs text-[var(--text-secondary)] mb-1 block">Jumlah Deposit {inputCurrency === 'USD' ? '($)' : '(IDR)'} <span className="opacity-50 font-normal ml-0.5">(Gunakan , desimal)</span></label>
+                      <label className="text-xs text-[var(--text-secondary)] mb-1 block">Jumlah Deposit {inputCurrency === 'USD' ? '($)' : '(IDR)'} <HelperTooltip text="Nominal uang tunai yang ingin didepositkan ke wallet." /></label>
                       <FormattedInput 
                          value={depositForm.amount} 
                          onChange={val => setDepositForm({...depositForm, amount: parseInput(val)})} 
@@ -1409,7 +1450,7 @@ const InvestmentPortfolio = () => {
                <h3 className="text-xl font-bold text-white mb-4 text-rose-400">Jual Aset (Sell)</h3>
                <form onSubmit={handleSell} className="space-y-4">
                   <div>
-                     <label className="text-xs text-[var(--text-secondary)] mb-1 block">Harga Jual (per unit) {inputCurrency === 'USD' ? '($)' : '(Rp)'} <span className="opacity-50 font-normal ml-0.5">(Gunakan , desimal)</span></label>
+                     <label className="text-xs text-[var(--text-secondary)] mb-1 block">Harga Jual (per unit) {inputCurrency === 'USD' ? '($)' : '(Rp)'} <HelperTooltip text="Harga jual per unit saat ini." /></label>
                      <FormattedInput 
                         value={sellData.sellPrice} 
                         onChange={val => setSellData({...sellData, sellPrice: parseInput(val)})} 
@@ -1420,7 +1461,7 @@ const InvestmentPortfolio = () => {
                      />
                   </div>
                   <div>
-                     <label className="text-xs text-[var(--text-secondary)] mb-1 block">Jumlah yang dijual <span className="opacity-50 font-normal ml-0.5">(Gunakan , desimal)</span></label>
+                     <label className="text-xs text-[var(--text-secondary)] mb-1 block">Jumlah yang dijual <HelperTooltip text="Jumlah unit unit aset yang akan dijual." /></label>
                      <FormattedInput 
                         value={sellData.amount} 
                         onChange={val => setSellData({...sellData, amount: parseInput(val)})} 
