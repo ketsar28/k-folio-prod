@@ -9,6 +9,7 @@ import ReadingList from "../components/dashboard/ReadingList";
 import FinanceTracker from "../components/dashboard/FinanceTracker";
 import ProjectBoard from "../components/dashboard/ProjectBoard";
 import UnifiedCalendar from "../components/dashboard/UnifiedCalendar";
+import InvestmentPortfolio from "../components/dashboard/InvestmentPortfolio";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Task01Icon,
@@ -18,6 +19,7 @@ import {
   MoneyBag02Icon,
   KanbanIcon,
   Calendar03Icon,
+  Analytics01Icon,
 } from "@hugeicons/core-free-icons";
 
 const Dashboard = () => {
@@ -42,6 +44,7 @@ const Dashboard = () => {
     { id: "projects", label: "Projects", icon: KanbanIcon },
     { id: "calendar", label: "Calendar", icon: Calendar03Icon },
     { id: "finance", label: "Finance", icon: MoneyBag02Icon },
+    { id: "investments", label: "Investments", icon: Analytics01Icon },
   ];
 
   return (
@@ -110,6 +113,7 @@ const Dashboard = () => {
               {activeTab === "finance" && <FinanceTracker />}
               {activeTab === "projects" && <ProjectBoard />}
               {activeTab === "calendar" && <UnifiedCalendar />}
+              {activeTab === "investments" && <InvestmentPortfolio />}
             </motion.div>
           </AnimatePresence>
         </div>

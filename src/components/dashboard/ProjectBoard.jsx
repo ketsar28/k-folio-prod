@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ConfirmModal from "../ui/ConfirmModal";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Add01Icon,
@@ -43,6 +44,10 @@ const ProjectBoard = () => {
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  
+  // Delete Popup
+  const [deleteId, setDeleteId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   
   // Form State
   const [formData, setFormData] = useState({
@@ -104,10 +109,15 @@ const ProjectBoard = () => {
     }
   };
 
-  const deleteProject = async (id) => {
-    if (!user) return;
-    if (window.confirm("Are you sure you want to delete this project?")) {
-      await deleteDoc(doc(db, "users", user.uid, "projects", id));
+  const confirmDelete = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (deleteId && user) {
+      await deleteDoc(doc(db, "users", user.uid, "projects", deleteId));
+      setDeleteId(null);
     }
   };
 
@@ -369,7 +379,7 @@ const ProjectBoard = () => {
                               <HugeiconsIcon icon={Edit02Icon} size={14} />
                             </button>
                             <button
-                              onClick={() => deleteProject(task.id)}
+                              onClick={() => confirmDelete(task.id)}
                               className="p-1 rounded hover:bg-slate-700 text-[var(--text-secondary)] hover:text-red-400"
                             >
                               <HugeiconsIcon icon={Delete02Icon} size={14} />
@@ -396,6 +406,15 @@ const ProjectBoard = () => {
           })}
         </div>
       </div>
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Delete Task?"
+        message="Are you sure you want to delete this task? This action cannot be undone."
+        confirmText="Delete"
+        type="danger"
+      />
     </div>
   );
 };

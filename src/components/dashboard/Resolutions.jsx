@@ -27,6 +27,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext";
+import ConfirmModal from "../ui/ConfirmModal";
 
 const CATEGORIES = [
   { id: "career", label: "Karir", color: "#10b981" },
@@ -55,6 +56,8 @@ const Resolutions = () => {
   const [expandedId, setExpandedId] = useState(null);
   const [filterYear, setFilterYear] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -153,13 +156,21 @@ const Resolutions = () => {
     }
   };
 
-  const deleteResolution = async (resId) => {
-    if (!user) return;
-    try {
-      const resRef = doc(db, "users", user.uid, "resolutions", resId);
-      await deleteDoc(resRef);
-    } catch (error) {
-      console.error("Error deleting resolution:", error);
+  const confirmDelete = (resId) => {
+    setDeleteId(resId);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (deleteId && user) {
+      try {
+        const resRef = doc(db, "users", user.uid, "resolutions", deleteId);
+        await deleteDoc(resRef);
+        setDeleteId(null);
+        setShowDeleteModal(false);
+      } catch (error) {
+        console.error("Error deleting resolution:", error);
+      }
     }
   };
 
@@ -584,7 +595,7 @@ const Resolutions = () => {
                           <HugeiconsIcon icon={Edit02Icon} size={16} />
                         </button>
                         <button
-                          onClick={() => deleteResolution(res.id)}
+                          onClick={() => confirmDelete(res.id)}
                           className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-red-400 hover:bg-red-500/10 transition-all"
                         >
                           <HugeiconsIcon icon={Delete02Icon} size={16} />
@@ -651,6 +662,16 @@ const Resolutions = () => {
           )}
         </AnimatePresence>
       </div>
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Hapus Resolusi?"
+        message="Resolusi ini akan dihapus permanen dari target kamu."
+        confirmText="Hapus"
+        type="danger"
+      />
     </div>
   );
 };

@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ConfirmModal from "../ui/ConfirmModal";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   PlayIcon,
@@ -11,9 +12,12 @@ import {
   InformationCircleIcon,
   Cancel01Icon,
   Notification01Icon,
+  Delete02Icon,
+  Clock01Icon,
+  TimerIcon,
 } from "@hugeicons/core-free-icons";
 import { db } from "../../config/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, deleteDoc, doc } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext";
 
 const TIMER_MODES = [
@@ -46,6 +50,21 @@ const FocusTimer = () => {
   const [customBreak, setCustomBreak] = useState(15);
   const [notificationPermission, setNotificationPermission] = useState("default");
   
+  // Session tracking for history
+  const [sessionHistory, setSessionHistory] = useState([]);
+  const [currentSessionStart, setCurrentSessionStart] = useState(null);
+  const [totalPausedTime, setTotalPausedTime] = useState(0);
+  const [pauseStartTime, setPauseStartTime] = useState(null);
+  const [hadPauses, setHadPauses] = useState(false);
+  
+  // Delete Confirmation State
+  const [deleteId, setDeleteId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Mode Switch Confirmation State
+  const [pendingMode, setPendingMode] = useState(null);
+  const [showSwitchModal, setShowSwitchModal] = useState(false);
+
   const timerRef = useRef(null);
   const audioRef = useRef(null);
   const originalTitle = useRef(document.title);
@@ -60,10 +79,42 @@ const FocusTimer = () => {
       setNotificationPermission(Notification.permission);
     }
     
+    const titleToRestore = originalTitle.current;
+    
     return () => {
-      document.title = originalTitle.current;
+      document.title = titleToRestore;
     };
   }, []);
+
+  // Subscribe to session history from Firestore
+  useEffect(() => {
+    if (!user) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const q = query(
+      collection(db, "users", user.uid, "focus_sessions"),
+      orderBy("completedAt", "desc")
+    );
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const sessions = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        completedAt: doc.data().completedAt?.toDate()
+      }));
+      setSessionHistory(sessions);
+      
+      // Count today's sessions
+      const todaySessions = sessions.filter(s => 
+        s.completedAt && s.completedAt >= today
+      );
+      setSessions(todaySessions.length);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   // Update document title with timer
   useEffect(() => {
@@ -75,14 +126,15 @@ const FocusTimer = () => {
     }
   }, [timeLeft, isActive, isBreak]);
 
+  // Reset timer when mode changes (only if not running and not paused mid-session)
   useEffect(() => {
-    // Reset timer when mode changes
-    if (!isActive && !isBreak) {
+    if (!isActive && !isBreak && !currentSessionStart) {
       setTimeLeft(mode.work * 60);
       setProgress(100);
     }
-  }, [mode, isActive, isBreak]);
+  }, [mode, isActive, isBreak, currentSessionStart]);
 
+  // Timer countdown
   useEffect(() => {
     if (isActive && timeLeft > 0) {
       timerRef.current = setInterval(() => {
@@ -136,27 +188,33 @@ const FocusTimer = () => {
     clearInterval(timerRef.current);
 
     if (!isBreak) {
-      // Work session completed
-      const newSessions = sessions + 1;
-      setSessions(newSessions);
-      
+      // Work session completed - LOG TO HISTORY
       sendNotification(
         "🎉 Sesi Fokus Selesai!",
         `Kerja bagus! Kamu sudah menyelesaikan sesi fokus ${mode.work} menit. Waktunya istirahat ${mode.break} menit.`
       );
       
       // Log to Firestore
-      if (user) {
+      if (user && currentSessionStart) {
         try {
           await addDoc(collection(db, "users", user.uid, "focus_sessions"), {
             mode: mode.id,
+            modeLabel: mode.label,
             duration: mode.work,
+            startedAt: currentSessionStart,
             completedAt: serverTimestamp(),
+            hadPauses: hadPauses,
+            totalPausedSeconds: Math.round(totalPausedTime / 1000),
           });
         } catch (error) {
           console.error("Error logging session:", error);
         }
       }
+
+      // Reset session tracking
+      setCurrentSessionStart(null);
+      setTotalPausedTime(0);
+      setHadPauses(false);
 
       // Start break
       setIsBreak(true);
@@ -180,7 +238,27 @@ const FocusTimer = () => {
     if (!isActive && notificationPermission === "default") {
       requestNotificationPermission();
     }
-    setIsActive(!isActive);
+    
+    if (!isActive) {
+      // Starting or Resuming
+      if (!currentSessionStart && !isBreak) {
+        // Fresh start
+        setCurrentSessionStart(new Date());
+        setTotalPausedTime(0);
+        setHadPauses(false);
+      } else if (pauseStartTime) {
+        // Resuming from pause
+        const pauseDuration = Date.now() - pauseStartTime;
+        setTotalPausedTime(prev => prev + pauseDuration);
+        setPauseStartTime(null);
+      }
+      setIsActive(true);
+    } else {
+      // Pausing
+      setHadPauses(true);
+      setPauseStartTime(Date.now());
+      setIsActive(false);
+    }
   };
 
   const resetTimer = () => {
@@ -189,6 +267,12 @@ const FocusTimer = () => {
     setTimeLeft(mode.work * 60);
     setProgress(100);
     clearInterval(timerRef.current);
+    
+    // Reset session tracking (do NOT log incomplete session)
+    setCurrentSessionStart(null);
+    setTotalPausedTime(0);
+    setHadPauses(false);
+    setPauseStartTime(null);
   };
 
   const skipBreak = () => {
@@ -201,17 +285,130 @@ const FocusTimer = () => {
     }
   };
 
+  const confirmDelete = (sessionId) => {
+    setDeleteId(sessionId);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (deleteId) {
+      await deleteSession(deleteId);
+      setDeleteId(null);
+    }
+  };
+
+  const deleteSession = async (sessionId) => {
+    if (!user) return;
+    try {
+      await deleteDoc(doc(db, "users", user.uid, "focus_sessions", sessionId));
+    } catch (error) {
+      console.error("Error deleting session:", error);
+    }
+  };
+
+  const handleModeClick = (newModeTemplate) => {
+    // If clicking the current mode, just toggle custom settings if it's custom
+    if (newModeTemplate.id === mode.id) {
+       if (newModeTemplate.id === "custom") {
+         setShowCustomSettings(!showCustomSettings);
+       }
+       return;
+    }
+
+    // Check if session is in progress (active or paused)
+    if (currentSessionStart || isActive || hadPauses) {
+      setPendingMode(newModeTemplate);
+      setShowSwitchModal(true);
+    } else {
+      // Safe to switch immediately
+      applyMode(newModeTemplate);
+    }
+  };
+
+  const confirmSwitchMode = () => {
+    if (pendingMode) {
+      applyMode(pendingMode);
+      setPendingMode(null);
+      setShowSwitchModal(false);
+    }
+  };
+
+  const applyMode = (targetMode) => {
+    resetTimer(); // Ensure everything is reset first
+    
+    if (targetMode.id === "custom") {
+      setShowCustomSettings(true);
+      setMode({ ...targetMode, work: customWork, break: customBreak });
+    } else {
+      setShowCustomSettings(false);
+      setMode(targetMode);
+    }
+  };
+  
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const formatSessionTime = (date) => {
+    if (!date) return "-";
+    return date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+  };
+
   const circleRadius = 120;
   const circumference = 2 * Math.PI * circleRadius;
 
+  // Today's stats
+  const todayStats = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const todaySessions = sessionHistory.filter(s => 
+      s.completedAt && s.completedAt >= today
+    );
+    
+    const totalMinutes = todaySessions.reduce((sum, s) => sum + (s.duration || 0), 0);
+    
+    return {
+      count: todaySessions.length,
+      totalMinutes,
+      sessions: todaySessions,
+    };
+  }, [sessionHistory]);
+
+  // Calculate streak (consecutive days with sessions)
+  const streak = useMemo(() => {
+    if (sessionHistory.length === 0) return 0;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    let currentDate = new Date(today);
+    let streakCount = 0;
+    
+    while (true) {
+      const dayStart = new Date(currentDate);
+      const dayEnd = new Date(currentDate);
+      dayEnd.setDate(dayEnd.getDate() + 1);
+      
+      const hasSession = sessionHistory.some(s => 
+        s.completedAt && s.completedAt >= dayStart && s.completedAt < dayEnd
+      );
+      
+      if (hasSession) {
+        streakCount++;
+        currentDate.setDate(currentDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    
+    return streakCount;
+  }, [sessionHistory]);
+
   return (
-    <div className="flex flex-col items-center justify-center space-y-6 py-4 sm:py-6">
+    <div className="flex flex-col items-center justify-start space-y-4 sm:space-y-6 py-2 sm:py-4">
       {/* How to Use Guide */}
       <AnimatePresence>
         {showGuide && (
@@ -219,270 +416,328 @@ const FocusTimer = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="w-full max-w-lg p-4 sm:p-5 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl"
+            className="w-full max-w-md p-4 rounded-2xl bg-slate-800/80 border border-[var(--glass-border)] mb-4"
           >
             <div className="flex justify-between items-start mb-3">
-              <h3 className="font-bold text-white flex items-center gap-2">
-                <HugeiconsIcon icon={InformationCircleIcon} size={20} className="text-blue-400" />
-                Cara Menggunakan Focus Timer
-              </h3>
-              <button onClick={() => setShowGuide(false)} className="text-gray-400 hover:text-white">
-                <HugeiconsIcon icon={Cancel01Icon} size={18} />
+              <h4 className="font-semibold text-white flex items-center gap-2">
+                <HugeiconsIcon icon={InformationCircleIcon} size={18} className="text-[var(--primary)]" />
+                Cara Menggunakan
+              </h4>
+              <button onClick={() => setShowGuide(false)} className="text-[var(--text-secondary)] hover:text-white">
+                <HugeiconsIcon icon={Cancel01Icon} size={16} />
               </button>
             </div>
-            <ol className="text-sm text-[var(--text-secondary)] space-y-2 list-decimal list-inside">
-              <li>Pilih mode timer sesuai kebutuhan (Pomodoro = 25/5 menit)</li>
-              <li>Tekan tombol <span className="text-[var(--primary)]">▶ Play</span> untuk memulai</li>
-              <li>Fokus bekerja sampai timer selesai (akan ada suara & notifikasi)</li>
-              <li>Istirahat sesuai waktu yang ditentukan</li>
-              <li>Ulangi sesi untuk produktivitas maksimal!</li>
-            </ol>
-            <div className="mt-3 p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-              <p className="text-xs text-amber-300">
-                💡 <strong>Tip:</strong> Aktifkan notifikasi browser agar kamu tahu kapan waktu selesai, bahkan saat tab tidak aktif!
-              </p>
-            </div>
+            <ul className="text-sm text-[var(--text-secondary)] space-y-2">
+              <li>1. Pilih teknik fokus (Pomodoro, Deep Work, dll)</li>
+              <li>2. Tekan <span className="text-[var(--primary)]">▶️ Play</span> untuk memulai</li>
+              <li>3. Tekan <span className="text-amber-400">⏸️ Pause</span> untuk jeda (waktu tersimpan)</li>
+              <li>4. Tekan <span className="text-red-400">⏹️ Stop</span> untuk reset total</li>
+              <li>5. Sesi tercatat di history setelah selesai</li>
+            </ul>
           </motion.div>
         )}
       </AnimatePresence>
-      
-      {/* Header with Help Button */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => setShowGuide(!showGuide)}
-          className={`p-2 rounded-xl transition-all ${showGuide ? "bg-blue-500/20 text-blue-400" : "bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-white"}`}
-          title="Cara menggunakan"
-        >
-          <HugeiconsIcon icon={InformationCircleIcon} size={20} />
-        </button>
-        
-        {/* Notification Permission Button */}
-        {notificationPermission !== "granted" && (
-          <button
-            onClick={requestNotificationPermission}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 text-amber-400 text-xs font-medium hover:bg-amber-500/20 transition-all"
-          >
-            <HugeiconsIcon icon={Notification01Icon} size={16} />
-            <span className="hidden sm:inline">Aktifkan Notifikasi</span>
-          </button>
-        )}
-      </div>
+
+      {/* Guide Toggle */}
+      <button
+        onClick={() => setShowGuide(!showGuide)}
+        className="text-[var(--text-secondary)] hover:text-white transition-colors"
+      >
+        <HugeiconsIcon icon={InformationCircleIcon} size={20} />
+      </button>
 
       {/* Mode Selector */}
       <div className="flex flex-wrap justify-center gap-2">
         {TIMER_MODES.map((m) => (
           <button
             key={m.id}
-            onClick={() => {
-              if (m.id === "custom") {
-                setShowCustomSettings(true);
-                // Create custom mode with user-defined times
-                const customMode = { ...m, work: customWork, break: customBreak, desc: `${customWork} menit kerja, ${customBreak} menit istirahat (Kustom)` };
-                setMode(customMode);
-                setTimeLeft(customWork * 60);
-              } else {
-                setShowCustomSettings(false);
-                setMode(m);
-                setTimeLeft(m.work * 60);
-              }
-              setIsActive(false);
-              setIsBreak(false);
-              setProgress(100);
-            }}
-            className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
+            onClick={() => handleModeClick(m)}
+            className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
               mode.id === m.id
-                ? "bg-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/25"
-                : "bg-[var(--bg-card)] border border-[var(--glass-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                ? "text-white shadow-lg"
+                : "bg-slate-800/50 text-[var(--text-secondary)] hover:bg-slate-700"
             }`}
-            title={m.desc}
+            style={mode.id === m.id ? { backgroundColor: m.color } : {}}
           >
             {m.label}
           </button>
         ))}
       </div>
 
-      {/* Custom Timer Settings */}
+      {/* Custom Settings Panel */}
       <AnimatePresence>
-        {showCustomSettings && (
+        {showCustomSettings && mode.id === "custom" && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="w-full max-w-md p-4 bg-gradient-to-br from-amber-500/10 to-orange-500/5 backdrop-blur-xl border border-amber-500/30 rounded-2xl"
+            className="w-full max-w-sm p-4 rounded-2xl bg-slate-800/80 border border-[var(--glass-border)]"
           >
-            <div className="flex justify-between items-center mb-3">
-              <h4 className="text-sm font-semibold text-amber-400 flex items-center gap-2">
-                ⚙️ Atur Waktu Kustom
-              </h4>
-              <button
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="font-semibold text-white text-sm">Pengaturan Custom</h4>
+              <button 
                 onClick={() => setShowCustomSettings(false)}
-                className="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 text-xs font-medium hover:bg-amber-500/30 transition-all flex items-center gap-1"
+                className="text-[var(--text-secondary)] hover:text-white"
               >
-                ✓ Selesai
+                <HugeiconsIcon icon={Cancel01Icon} size={16} />
               </button>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">🎯 Fokus</label>
+                <label className="text-xs text-[var(--text-secondary)] block mb-1">Fokus (menit)</label>
                 <input
                   type="number"
-                  min={1}
-                  max={480}
+                  min="1"
+                  max="180"
                   value={customWork}
                   onChange={(e) => {
-                    const value = Math.max(1, Math.min(480, parseInt(e.target.value) || 1));
-                    setCustomWork(value);
-                    if (!isActive && !isBreak) {
-                      setMode(prev => ({ ...prev, work: value, desc: `${formatMinutesToTime(value)} kerja, ${formatMinutesToTime(customBreak)} istirahat (Kustom)` }));
-                      setTimeLeft(value * 60);
-                    }
+                    const val = parseInt(e.target.value) || 1;
+                    setCustomWork(val);
+                    setMode(prev => ({ ...prev, work: val }));
                   }}
-                  className="w-full px-3 py-2.5 rounded-xl bg-slate-800/80 border border-amber-500/30 focus:border-amber-500 outline-none text-white text-lg text-center font-bold appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-700 border border-slate-600 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
-                <p className="text-xs text-center text-[var(--text-secondary)] mt-1">
-                  = {formatMinutesToTime(customWork)}
-                </p>
               </div>
               <div>
-                <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">☕ Istirahat</label>
+                <label className="text-xs text-[var(--text-secondary)] block mb-1">Istirahat (menit)</label>
                 <input
                   type="number"
-                  min={1}
-                  max={120}
+                  min="1"
+                  max="60"
                   value={customBreak}
                   onChange={(e) => {
-                    const value = Math.max(1, Math.min(120, parseInt(e.target.value) || 1));
-                    setCustomBreak(value);
-                    if (!isActive && !isBreak) {
-                      setMode(prev => ({ ...prev, break: value, desc: `${formatMinutesToTime(customWork)} kerja, ${formatMinutesToTime(value)} istirahat (Kustom)` }));
-                    }
+                    const val = parseInt(e.target.value) || 1;
+                    setCustomBreak(val);
+                    setMode(prev => ({ ...prev, break: val }));
                   }}
-                  className="w-full px-3 py-2.5 rounded-xl bg-slate-800/80 border border-amber-500/30 focus:border-amber-500 outline-none text-white text-lg text-center font-bold appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-700 border border-slate-600 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
-                <p className="text-xs text-center text-[var(--text-secondary)] mt-1">
-                  = {formatMinutesToTime(customBreak)}
-                </p>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Current Mode Description - Visual Badge */}
-      <motion.div 
-        className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-[var(--bg-card)]/50 border border-[var(--glass-border)]"
-        initial={{ scale: 0.95 }}
-        animate={{ scale: 1 }}
-        key={mode.id}
+      {/* Mode Description */}
+      <div 
+        className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm"
+        style={{ backgroundColor: `${mode.color}20`, color: mode.color }}
       >
-        <div 
-          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm"
-          style={{ backgroundColor: mode.color }}
-        >
-          {isBreak ? "☕" : "🎯"}
-        </div>
-        <div>
-          <span className="text-xs text-[var(--text-secondary)]">{mode.label}</span>
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-white font-medium">{formatMinutesToTime(mode.work)}</span>
-            <span className="text-[var(--text-secondary)]">→</span>
-            <span className="text-emerald-400 font-medium">{formatMinutesToTime(mode.break)} istirahat</span>
-          </div>
-        </div>
-      </motion.div>
+        <span className="font-semibold">{mode.label}</span>
+        <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+        <span>{formatMinutesToTime(mode.work)} → {formatMinutesToTime(mode.break)} istirahat</span>
+      </div>
 
-      {/* Timer Display */}
-      <div className="relative w-56 h-56 sm:w-72 sm:h-72 flex items-center justify-center">
-        {/* SVG Ring */}
-        <svg className="absolute w-full h-full transform -rotate-90" viewBox="0 0 288 288">
+      {/* Timer Circle */}
+      <motion.div
+        key={mode.id}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="relative w-64 h-64 sm:w-72 sm:h-72"
+      >
+        <svg className="w-full h-full transform -rotate-90">
+          {/* Background Circle */}
           <circle
-            cx="144"
-            cy="144"
-            r="120"
-            stroke="currentColor"
-            strokeWidth="10"
-            fill="transparent"
-            className="text-[var(--bg-card)] opacity-50"
+            cx="50%"
+            cy="50%"
+            r={circleRadius}
+            fill="none"
+            stroke="rgba(255,255,255,0.1)"
+            strokeWidth="8"
           />
+          {/* Progress Circle */}
           <motion.circle
-            cx="144"
-            cy="144"
-            r="120"
+            cx="50%"
+            cy="50%"
+            r={circleRadius}
+            fill="none"
             stroke={isBreak ? "#10b981" : mode.color}
-            strokeWidth="10"
-            fill="transparent"
+            strokeWidth="8"
+            strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={circumference - (progress / 100) * circumference}
-            strokeLinecap="round"
-            initial={{ strokeDashoffset: circumference }}
-            animate={{ strokeDashoffset: circumference - (progress / 100) * circumference }}
-            transition={{ duration: 1, ease: "linear" }}
+            initial={false}
+            animate={{ 
+              strokeDashoffset: circumference - (progress / 100) * circumference 
+            }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
           />
         </svg>
 
-        {/* Time Text */}
-        <div className="text-center z-10">
-          <div className="flex items-center justify-center gap-2 mb-2 text-[var(--text-secondary)]">
-            <HugeiconsIcon icon={isBreak ? Moon02Icon : Sun01Icon} size={18} />
-            <span className="uppercase tracking-widest text-xs sm:text-sm font-medium">
-              {isBreak ? "Istirahat" : "Fokus"}
-            </span>
-          </div>
-          <div className="text-5xl sm:text-6xl font-bold tabular-nums tracking-tighter text-[var(--text-primary)]">
+        {/* Timer Display */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-xs sm:text-sm text-[var(--text-secondary)] mb-1 flex items-center gap-1">
+            <HugeiconsIcon icon={isBreak ? Moon02Icon : Sun01Icon} size={14} />
+            {isBreak ? "ISTIRAHAT" : "FOKUS"}
+          </span>
+          <span className="text-4xl sm:text-5xl font-bold text-white tracking-wider">
             {formatTime(timeLeft)}
-          </div>
-          <div className="mt-3 text-sm text-[var(--text-secondary)] font-medium">
+          </span>
+          <span className="text-xs text-[var(--text-secondary)] mt-2">
             Sesi #{sessions + 1}
-          </div>
+          </span>
+          {currentSessionStart && !isBreak && (
+            <span className="text-[10px] text-amber-400 mt-1">
+              {hadPauses ? "• Ada jeda" : "• Sedang berjalan"}
+            </span>
+          )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Controls */}
-      <div className="flex items-center gap-3 sm:gap-4">
-        <button
+      <div className="flex items-center gap-4">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={toggleTimer}
-          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[var(--primary)] text-white flex items-center justify-center shadow-lg shadow-[var(--primary)]/30 hover:scale-105 active:scale-95 transition-all"
+          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white shadow-lg transition-colors"
+          style={{ backgroundColor: isActive ? "#f59e0b" : "var(--primary)" }}
         >
-          <HugeiconsIcon icon={isActive ? PauseIcon : PlayIcon} size={28} fill="currentColor" />
-        </button>
-        <button
+          <HugeiconsIcon icon={isActive ? PauseIcon : PlayIcon} size={24} />
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={resetTimer}
-          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--bg-card)] border border-[var(--glass-border)] text-[var(--text-secondary)] flex items-center justify-center hover:text-white hover:bg-slate-700 transition-all"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-slate-700 flex items-center justify-center text-white hover:bg-slate-600 transition-colors"
         >
           <HugeiconsIcon icon={StopIcon} size={20} />
-        </button>
-        
-        {/* Skip Break Button */}
+        </motion.button>
+
         {isBreak && (
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={skipBreak}
-            className="px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 text-sm font-medium flex items-center gap-2 hover:bg-emerald-500/30 transition-all"
+            className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition-colors"
           >
-            <span>Skip</span>
-            <HugeiconsIcon icon={ArrowRight01Icon} size={16} />
+            Skip Istirahat
           </motion.button>
         )}
       </div>
 
-      {/* Daily Stats */}
-      <div className="grid grid-cols-3 gap-3 sm:gap-4 w-full max-w-md">
-        <div className="p-3 sm:p-4 rounded-xl bg-[var(--bg-card)]/50 border border-[var(--glass-border)] text-center">
-          <div className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">{sessions}</div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-3 gap-3 w-full max-w-md">
+        <div className="p-3 sm:p-4 rounded-2xl bg-slate-800/50 border border-[var(--glass-border)] text-center">
+          <div className="text-xl sm:text-2xl font-bold text-white">{todayStats.count}</div>
           <div className="text-[10px] sm:text-xs text-[var(--text-secondary)]">Sesi Hari Ini</div>
         </div>
-        <div className="p-3 sm:p-4 rounded-xl bg-[var(--bg-card)]/50 border border-[var(--glass-border)] text-center">
-          <div className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
-            {Math.round(sessions * mode.work / 60 * 10) / 10}h
-          </div>
+        <div className="p-3 sm:p-4 rounded-2xl bg-slate-800/50 border border-[var(--glass-border)] text-center">
+          <div className="text-xl sm:text-2xl font-bold text-white">{formatMinutesToTime(todayStats.totalMinutes)}</div>
           <div className="text-[10px] sm:text-xs text-[var(--text-secondary)]">Total Fokus</div>
         </div>
-        <div className="p-3 sm:p-4 rounded-xl bg-[var(--bg-card)]/50 border border-[var(--glass-border)] text-center">
-          <div className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">🔥</div>
+        <div className="p-3 sm:p-4 rounded-2xl bg-slate-800/50 border border-[var(--glass-border)] text-center">
+          <div className="text-xl sm:text-2xl font-bold text-white flex items-center justify-center gap-1">
+            🔥 {streak}
+          </div>
           <div className="text-[10px] sm:text-xs text-[var(--text-secondary)]">Streak</div>
         </div>
       </div>
+
+      {/* Session History */}
+      {/* Session History (Always Visible) */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md p-4 rounded-2xl bg-slate-800/50 border border-[var(--glass-border)]"
+      >
+        <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+          <HugeiconsIcon icon={TimerIcon} size={18} className="text-[var(--primary)]" />
+          History Hari Ini
+        </h4>
+
+        {todayStats.sessions.length > 0 ? (
+          <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+            {todayStats.sessions.map((session) => (
+              <div
+                key={session.id}
+                className="flex items-center justify-between p-3 rounded-xl bg-slate-700/50 border border-slate-600/50 group hover:border-[var(--primary)]/30 transition-all"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div 
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ backgroundColor: TIMER_MODES.find(m => m.id === session.mode)?.color || "#6b7280" }}
+                  />
+                  <div className="min-w-0">
+                    <div className="text-sm text-white font-medium truncate">
+                      {session.modeLabel || session.mode}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-[var(--text-secondary)]">
+                      <span className="flex items-center gap-1">
+                        <HugeiconsIcon icon={Clock01Icon} size={10} />
+                        {formatSessionTime(session.completedAt)}
+                      </span>
+                      <span>•</span>
+                      <span>{session.duration} menit</span>
+                      {session.hadPauses && (
+                        <>
+                          <span>•</span>
+                          <span className="text-amber-400">Jeda: {Math.round((session.totalPausedSeconds || 0) / 60)}m</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => confirmDelete(session.id)}
+                  className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all shrink-0"
+                >
+                  <HugeiconsIcon icon={Delete02Icon} size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* Empty State */
+          <div className="flex flex-col items-center justify-center py-8 text-center bg-slate-700/20 rounded-xl border border-dashed border-slate-700">
+            <div className="w-12 h-12 rounded-full bg-slate-700/50 flex items-center justify-center mb-3 text-slate-500">
+              <HugeiconsIcon icon={TimerIcon} size={24} />
+            </div>
+            <p className="text-sm text-slate-400 font-medium">Belum ada sesi fokus</p>
+            <p className="text-xs text-slate-500 mt-1">Ayo mulai fokus produktif hari ini!</p>
+          </div>
+        )}
+      </motion.div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Hapus Sesi?"
+        message="Sesi ini akan dihapus permanen dari riwayat kamu."
+        confirmText="Hapus"
+        type="danger"
+      />
+
+      {/* Mode Switch Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showSwitchModal}
+        onClose={() => {
+          setShowSwitchModal(false);
+          setPendingMode(null);
+        }}
+        onConfirm={confirmSwitchMode}
+        title="Ganti Mode Fokus?"
+        message={`Sesi "${mode.label}" sedang berjalan. Mengganti mode akan mereset progress saat ini.`}
+        confirmText="Reset & Ganti"
+        cancelText="Lanjut Fokus"
+        type="warning"
+      />
+
+      {/* Notification Permission */}
+      {notificationPermission === "default" && (
+        <button
+          onClick={requestNotificationPermission}
+          className="flex items-center gap-2 text-xs text-[var(--text-secondary)] hover:text-white transition-colors"
+        >
+          <HugeiconsIcon icon={Notification01Icon} size={14} />
+          Aktifkan Notifikasi
+        </button>
+      )}
     </div>
   );
 };

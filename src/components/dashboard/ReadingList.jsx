@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ConfirmModal from "../ui/ConfirmModal";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   BookOpen01Icon,
@@ -51,6 +52,10 @@ const ReadingList = () => {
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  
+  // Delete Confirmation
+  const [deleteId, setDeleteId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -119,10 +124,15 @@ const ReadingList = () => {
     }
   };
 
-  const deleteBook = async (id) => {
-    if (!user) return;
-    if (confirm("Hapus buku ini dari daftar?")) {
-      await deleteDoc(doc(db, "users", user.uid, "reading_list", id));
+  const confirmDelete = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (deleteId && user) {
+      await deleteDoc(doc(db, "users", user.uid, "reading_list", deleteId));
+      setDeleteId(null);
     }
   };
 
@@ -374,7 +384,7 @@ const ReadingList = () => {
                       <HugeiconsIcon icon={Edit02Icon} size={16} />
                     </button>
                     <button 
-                      onClick={(e) => { e.stopPropagation(); deleteBook(book.id); }} 
+                      onClick={(e) => { e.stopPropagation(); confirmDelete(book.id); }} 
                       className="p-1.5 sm:p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
                     >
                       <HugeiconsIcon icon={Delete02Icon} size={16} />
@@ -439,6 +449,16 @@ const ReadingList = () => {
           <p>Belum ada buku yang ditambahkan</p>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Hapus Buku?"
+        message="Buku ini akan dihapus permanen dari daftar bacaanmu."
+        confirmText="Hapus"
+        type="danger"
+      />
     </div>
   );
 };

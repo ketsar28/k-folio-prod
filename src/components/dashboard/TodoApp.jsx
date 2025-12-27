@@ -26,6 +26,7 @@ import {
   serverTimestamp 
 } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext";
+import ConfirmModal from "../ui/ConfirmModal";
 
 const PRIORITIES = [
   { id: "low", label: "Rendah", color: "#6b7280" },
@@ -46,6 +47,8 @@ const TodoApp = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   // Subscribe to todos collection
   useEffect(() => {
@@ -147,13 +150,21 @@ const TodoApp = () => {
     }
   };
 
-  const deleteTodo = async (todoId) => {
-    if (!user) return;
-    try {
-      const todoRef = doc(db, "users", user.uid, "todos", todoId);
-      await deleteDoc(todoRef);
-    } catch (error) {
-      console.error("Error deleting todo:", error);
+  const confirmDelete = (todoId) => {
+    setDeleteId(todoId);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (deleteId && user) {
+      try {
+        const todoRef = doc(db, "users", user.uid, "todos", deleteId);
+        await deleteDoc(todoRef);
+        setDeleteId(null);
+        setShowDeleteModal(false);
+      } catch (error) {
+        console.error("Error deleting todo:", error);
+      }
     }
   };
 
@@ -545,12 +556,12 @@ const TodoApp = () => {
                     </button>
                     
                     {/* Delete Button */}
-                    <button
-                      onClick={() => deleteTodo(todo.id)}
-                      className="p-1.5 sm:p-2 rounded-lg text-[var(--text-secondary)] hover:text-red-400 hover:bg-red-500/10 transition-all"
-                    >
-                      <HugeiconsIcon icon={Delete02Icon} size={16} />
-                    </button>
+                        <button
+                          onClick={() => confirmDelete(todo.id)}
+                          className="p-1.5 sm:p-2 rounded-lg text-[var(--text-secondary)] hover:text-red-400 hover:bg-red-500/10 transition-all"
+                        >
+                          <HugeiconsIcon icon={Delete02Icon} size={16} />
+                        </button>
                   </div>
                 </div>
               </motion.div>
@@ -558,6 +569,16 @@ const TodoApp = () => {
           )}
         </AnimatePresence>
       </div>
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Hapus Tugas?"
+        message="Tugas ini akan dihapus permanen dari daftar kamu."
+        confirmText="Hapus"
+        type="danger"
+      />
     </div>
   );
 };

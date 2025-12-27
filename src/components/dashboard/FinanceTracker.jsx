@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ConfirmModal from "../ui/ConfirmModal";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Add01Icon,
@@ -103,6 +104,10 @@ const FinanceTracker = () => {
   const [customDateStart, setCustomDateStart] = useState(new Date().toISOString().split("T")[0]);
   const [customDateEnd, setCustomDateEnd] = useState(new Date().toISOString().split("T")[0]);
 
+  // Delete Confirmation
+  const [deleteId, setDeleteId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
 
   // Form state
   const [formData, setFormData] = useState({
@@ -171,6 +176,11 @@ const FinanceTracker = () => {
 
     return balances;
   }, [transactions, initialBalances]);
+
+  // Calculate Total Balance (Sum of all accounts)
+  const totalBalance = useMemo(() => {
+    return Object.values(accountBalances).reduce((sum, val) => sum + (val || 0), 0);
+  }, [accountBalances]);
 
   // Save initial balance to Firestore
   const saveInitialBalance = async (accountId, amount) => {
@@ -394,10 +404,15 @@ const FinanceTracker = () => {
     }
   };
 
-  const deleteTransaction = async (id) => {
-    if (!user) return;
-    if (confirm("Hapus transaksi ini?")) {
-      await deleteDoc(doc(db, "users", user.uid, "transactions", id));
+  const confirmDelete = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (deleteId && user) {
+      await deleteDoc(doc(db, "users", user.uid, "transactions", deleteId));
+      setDeleteId(null);
     }
   };
 
@@ -484,23 +499,23 @@ const FinanceTracker = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className={`p-4 sm:p-5 rounded-2xl bg-gradient-to-br ${
-            stats.balance >= 0
+            totalBalance >= 0
               ? "from-blue-500/10 to-blue-600/5 border-blue-500/20"
               : "from-orange-500/10 to-orange-600/5 border-orange-500/20"
           } border`}
         >
           <div className="flex items-center gap-3 mb-3">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-              stats.balance >= 0 ? "bg-blue-500/20" : "bg-orange-500/20"
+              totalBalance >= 0 ? "bg-blue-500/20" : "bg-orange-500/20"
             }`}>
-              <HugeiconsIcon icon={Wallet01Icon} size={20} className={stats.balance >= 0 ? "text-blue-400" : "text-orange-400"} />
+              <HugeiconsIcon icon={Wallet01Icon} size={20} className={totalBalance >= 0 ? "text-blue-400" : "text-orange-400"} />
             </div>
-            <span className="text-sm text-[var(--text-secondary)]">Saldo</span>
+            <span className="text-sm text-[var(--text-secondary)]">Total Saldo</span>
           </div>
           <div className={`text-2xl sm:text-3xl font-bold ${
-            stats.balance >= 0 ? "text-blue-400" : "text-orange-400"
+            totalBalance >= 0 ? "text-blue-400" : "text-orange-400"
           }`}>
-            {formatCurrency(stats.balance)}
+            {formatCurrency(totalBalance)}
           </div>
         </motion.div>
       </div>
@@ -1020,7 +1035,7 @@ const FinanceTracker = () => {
                           <HugeiconsIcon icon={Edit02Icon} size={14} />
                         </button>
                         <button
-                          onClick={() => deleteTransaction(t.id)}
+                          onClick={() => confirmDelete(t.id)}
                           className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-red-400 hover:bg-red-500/10 transition-colors"
                         >
                           <HugeiconsIcon icon={Delete02Icon} size={14} />
@@ -1076,7 +1091,7 @@ const FinanceTracker = () => {
                         <HugeiconsIcon icon={Edit02Icon} size={16} />
                       </button>
                       <button
-                        onClick={() => deleteTransaction(t.id)}
+                        onClick={() => confirmDelete(t.id)}
                         className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-red-400 hover:bg-red-500/10 transition-colors"
                       >
                         <HugeiconsIcon icon={Delete02Icon} size={16} />
@@ -1089,6 +1104,15 @@ const FinanceTracker = () => {
           )}
         </AnimatePresence>
       </div>
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Hapus Transaksi?"
+        message="Transaksi ini akan dihapus permanen dari riwayat kamu."
+        confirmText="Hapus"
+        type="danger"
+      />
     </div>
   );
 };
